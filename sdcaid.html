@@ -229,7 +229,154 @@
             showLogin();
         }
 
-        // Update the wallet balance
+// Update the wallet balance
         function updateBalance() {
             if (currentUser) {
-                document.getElementById('wallet
+                document.getElementById('wallet-balance').innerText = `Balance: ${users[currentUser].balance} SDC`;
+            }
+        }
+
+        // Simulate sending SDC to another user with tax calculation
+        document.getElementById('send-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            let receiver = document.getElementById('receiver-address').value;
+            let amount = parseFloat(document.getElementById('amount').value);
+            let taxRate = parseFloat(document.getElementById('tax-rate').value);
+
+            if (!users[receiver]) {
+                alert("Receiver does not exist!");
+                return;
+            }
+
+            if (amount <= 0 || amount > users[currentUser].balance) {
+                alert("Invalid amount!");
+                return;
+            }
+
+            // Calculate tax and total amount
+            let taxAmount = (taxRate / 100) * amount;
+            let totalAmount = amount + taxAmount;
+
+            if (totalAmount > users[currentUser].balance) {
+                alert("Insufficient balance including tax!");
+                return;
+            }
+
+            // Generate a unique transaction ID and receipt number
+            let transactionId = 'TX' + Date.now(); // Example: TX1632025260835
+            let receiptNumber = Math.floor(Math.random() * 1000000000);
+
+            // Simulate transaction (including tax)
+            users[currentUser].balance -= totalAmount;
+            users[receiver].balance += amount; // Transfer only the original amount, tax goes to the platform
+
+            let transaction = {
+                id: transactionId,
+                receiptNumber: receiptNumber,
+                date: new Date().toLocaleString(),
+                sender: currentUser,
+                receiver: receiver,
+                amount: amount,
+                tax: taxAmount,
+                totalAmount: totalAmount
+            };
+
+            // Log transaction for both sender and receiver
+            users[currentUser].transactions.push(transaction);
+            users[receiver].transactions.push(transaction);
+
+            // Log the tax deduction (for reporting purposes)
+            console.log(`Tax Collected: ${taxAmount} SDC`);
+
+            updateBalance();
+            addTransaction();
+        });
+
+        // Display transactions with details like transaction ID, receipt number, date/time, tax info
+        function addTransaction() {
+            const transactionList = document.getElementById('transaction-history');
+            transactionList.innerHTML = ''; // Clear the list
+
+            users[currentUser].transactions.forEach(transaction => {
+                const transactionItem = document.createElement('li');
+                transactionItem.classList.add('transaction-details');
+                transactionItem.innerHTML = `
+                    <strong>Transaction ID:</strong> ${transaction.id} <br>
+                    <strong>Receipt No:</strong> ${transaction.receiptNumber} <br>
+                    <strong>Date:</strong> ${transaction.date} <br>
+                    <strong>From:</strong> ${transaction.sender} <br>
+                    <strong>To:</strong> ${transaction.receiver} <br>
+                    <strong>Amount:</strong> ${transaction.amount} SDC <br>
+                    <strong>Tax:</strong> ${transaction.tax} SDC <br>
+                    <strong>Total (including tax):</strong> ${transaction.totalAmount} SDC
+                `;
+                transactionList.appendChild(transactionItem);
+            });
+        }
+
+        // MoMo payment integration
+        document.getElementById('momo-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            let phoneNumber = document.getElementById('momo-phone').value;
+            let momoAmount = parseFloat(document.getElementById('momo-amount').value);
+
+            if (momoAmount <= 0 || momoAmount > users[currentUser].balance) {
+                alert("Invalid amount for MoMo payment!");
+                return;
+            }
+
+            // Here you would make the MoMo API call to process payment
+            let paymentDetails = {
+                phoneNumber: phoneNumber,
+                amount: momoAmount,
+                currency: 'ZAR',
+                primaryKey: primaryKey, 
+                secondaryKey: secondaryKey
+            };
+
+            // Example of making an API call to MoMo (Simulated)
+            makeMoMoPayment(paymentDetails);
+        });
+
+        // Function to make MoMo payment
+        function makeMoMoPayment(details) {
+            const headers = new Headers();
+            headers.append("Authorization", `Bearer ${primaryKey}:${secondaryKey}`);
+            headers.append("Content-Type", "application/json");
+
+            fetch(momoApiUrl, {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify({
+                    "phoneNumber": details.phoneNumber,
+                    "amount": details.amount,
+                    "currency": details.currency
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'SUCCESS') {
+                    alert('Payment successful! MoMo transaction ID: ' + data.transactionId);
+                    // Simulate deduction of MoMo amount from user's balance
+                    users[currentUser].balance -= details.amount;
+                    updateBalance();
+                } else {
+                    alert('Payment failed: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error processing MoMo payment.');
+            });
+        }
+
+        // Check balance function
+        function checkBalance() {
+            updateBalance();
+        }
+    </script>
+
+</body>
+</html>
