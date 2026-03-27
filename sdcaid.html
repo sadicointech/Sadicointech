@@ -1,9 +1,9 @@
-  <!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SADC CBDC Platform</title>
+    <title>SDC SDG GRANT PROTOTYPE Platform</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -135,31 +135,9 @@
             <input type="text" id="receiver-address" placeholder="Enter Username" required>
             <label for="amount">Amount (SDC):</label>
             <input type="number" id="amount" min="0.01" step="0.01" required>
+            <label for="tax-rate">Tax Rate (%)</label>
+            <input type="number" id="tax-rate" min="0" step="0.1" required>
             <button type="submit">Send Payment</button>
-        </form>
-    </section>
-
-    <!-- Transfer to Bank Section -->
-    <section id="send-to-bank-section" class="hidden">
-        <h2>Send SIM to Bank Account</h2>
-        <form id="send-to-bank-form">
-            <label for="bank-recipient">Bank Account Number:</label>
-            <input type="text" id="bank-recipient" placeholder="Enter Bank Account Number" required>
-            <label for="bank-amount">Amount (SDC):</label>
-            <input type="number" id="bank-amount" min="0.01" step="0.01" required>
-            <button type="submit">Send to Bank</button>
-        </form>
-    </section>
-
-    <!-- Transfer to Crypto Section -->
-    <section id="send-to-crypto-section" class="hidden">
-        <h2>Send SIM to Crypto Wallet</h2>
-        <form id="send-to-crypto-form">
-            <label for="crypto-address">Crypto Wallet Address:</label>
-            <input type="text" id="crypto-address" placeholder="Enter Crypto Wallet Address" required>
-            <label for="crypto-amount">Amount (SDC):</label>
-            <input type="number" id="crypto-amount" min="0.01" step="0.01" required>
-            <button type="submit">Send to Crypto</button>
         </form>
     </section>
 
@@ -225,8 +203,6 @@
             document.getElementById('wallet-section').classList.remove('hidden');
             document.getElementById('transactions-section').classList.remove('hidden');
             document.getElementById('send-receive-section').classList.remove('hidden');
-            document.getElementById('send-to-bank-section').classList.remove('hidden');
-            document.getElementById('send-to-crypto-section').classList.remove('hidden');
             updateBalance();
         }
 
@@ -238,150 +214,4 @@
 
         // Update the wallet balance
         function updateBalance() {
-            if (currentUser) {
-                document.getElementById('wallet-balance').innerText = `Balance: ${users[currentUser].balance} SDC`;
-            }
-        }
-
-        // Simulate sending SDC to another user
-        document.getElementById('send-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            let receiver = document.getElementById('receiver-address').value;
-            let amount = parseFloat(document.getElementById('amount').value);
-
-            if (!users[receiver]) {
-                alert("Receiver does not exist!");
-                return;
-            }
-
-            if (amount <= 0 || amount > users[currentUser].balance) {
-                alert("Invalid amount!");
-                return;
-            }
-
-            // Generate a unique transaction ID and receipt number
-            let transactionId = 'TX' + Date.now(); // Example: TX1632025260835
-            let receiptNumber = Math.floor(Math.random() * 1000000000);
-
-            // Simulate transaction
-            users[currentUser].balance -= amount;
-            users[receiver].balance += amount;
-
-            let transaction = {
-                id: transactionId,
-                receiptNumber: receiptNumber,
-                date: new Date().toLocaleString(),
-                sender: currentUser,
-                receiver: receiver,
-                amount: amount
-            };
-
-            // Log transaction for both sender and receiver
-            users[currentUser].transactions.push(transaction);
-            users[receiver].transactions.push(transaction);
-
-            updateBalance();
-            addTransaction();
-        });
-
-        // Simulate sending SDC to a bank account
-        document.getElementById('send-to-bank-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            let bankAccount = document.getElementById('bank-recipient').value;
-            let amount = parseFloat(document.getElementById('bank-amount').value);
-
-            if (amount <= 0 || amount > users[currentUser].balance) {
-                alert("Invalid amount!");
-                return;
-            }
-
-            // Generate a unique transaction ID and receipt number for the bank transfer
-            let transactionId = 'TX-BANK' + Date.now(); 
-            let receiptNumber = Math.floor(Math.random() * 1000000000);
-
-            // Simulate transaction to bank
-            users[currentUser].balance -= amount;
-
-            let transaction = {
-                id: transactionId,
-                receiptNumber: receiptNumber,
-                date: new Date().toLocaleString(),
-                sender: currentUser,
-                receiver: `Bank Account: ${bankAccount}`,
-                amount: amount
-            };
-
-            // Log transaction for the sender
-            users[currentUser].transactions.push(transaction);
-
-            updateBalance();
-            addTransaction();
-            alert(`Payment sent to bank account ${bankAccount}.`);
-        });
-
-        // Simulate sending SDC to a crypto wallet
-        document.getElementById('send-to-crypto-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            let cryptoWallet = document.getElementById('crypto-address').value;
-            let amount = parseFloat(document.getElementById('crypto-amount').value);
-
-            if (amount <= 0 || amount > users[currentUser].balance) {
-                alert("Invalid amount!");
-                return;
-            }
-
-            // Generate a unique transaction ID and receipt number for the crypto transfer
-            let transactionId = 'TX-CRYPTO' + Date.now();
-            let receiptNumber = Math.floor(Math.random() * 1000000000);
-
-            // Simulate transaction to crypto wallet
-            users[currentUser].balance -= amount;
-
-            let transaction = {
-                id: transactionId,
-                receiptNumber: receiptNumber,
-                date: new Date().toLocaleString(),
-                sender: currentUser,
-                receiver: `Crypto Wallet: ${cryptoWallet}`,
-                amount: amount
-            };
-
-            // Log transaction for the sender
-            users[currentUser].transactions.push(transaction);
-
-            updateBalance();
-            addTransaction();
-            alert(`Payment sent to crypto wallet ${cryptoWallet}.`);
-        });
-
-        // Display transactions with details like transaction ID, receipt number, date/time
-        function addTransaction() {
-            const transactionList = document.getElementById('transaction-history');
-            transactionList.innerHTML = ''; // Clear the list
-
-            users[currentUser].transactions.forEach(transaction => {
-                const transactionItem = document.createElement('li');
-                transactionItem.classList.add('transaction-details');
-                transactionItem.innerHTML = `
-                    <strong>Transaction ID:</strong> ${transaction.id} <br>
-                    <strong>Receipt No:</strong> ${transaction.receiptNumber} <br>
-                    <strong>Date:</strong> ${transaction.date} <br>
-                    <strong>From:</strong> ${transaction.sender} <br>
-                    <strong>To:</strong> ${transaction.receiver} <br>
-                    <strong>Amount:</strong> ${transaction.amount} SDC
-                `;
-                transactionList.appendChild(transactionItem);
-            });
-        }
-
-        // Check balance function
-        function checkBalance() {
-            updateBalance();
-        }
-    </script>
-
-</body>
-</html>
+            if (
