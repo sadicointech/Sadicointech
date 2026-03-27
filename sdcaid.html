@@ -274,4 +274,17 @@
                     <strong>Date:</strong> ${transaction.date} <br>
                     <strong>From:</strong> ${transaction.sender} <br>
                     <strong>To:</strong> ${transaction.receiver} <br>
-                    <strong>Amount:</strong> ${transaction
+                    <strong>Amount:</strong> ${transaction.amount} SDC
+                `;
+                transactionList.appendChild(transactionItem);
+            });
+        }
+
+        // Check balance function
+        function checkBalance() {
+            updateBalance();
+        }
+    </script>
+
+</body>
+</html>
