@@ -214,4 +214,95 @@
 
         // Update the wallet balance
         function updateBalance() {
-            if (
+            if (currentUser) {
+                document.getElementById('wallet-balance').innerText = `Balance: ${users[currentUser].balance} SDC`;
+            }
+        }
+
+        // Simulate sending SDC to another user with tax calculation
+        document.getElementById('send-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            let receiver = document.getElementById('receiver-address').value;
+            let amount = parseFloat(document.getElementById('amount').value);
+            let taxRate = parseFloat(document.getElementById('tax-rate').value);
+
+            if (!users[receiver]) {
+                alert("Receiver does not exist!");
+                return;
+            }
+
+            if (amount <= 0 || amount > users[currentUser].balance) {
+                alert("Invalid amount!");
+                return;
+            }
+
+            // Calculate tax and total amount
+            let taxAmount = (taxRate / 100) * amount;
+            let totalAmount = amount + taxAmount;
+
+            if (totalAmount > users[currentUser].balance) {
+                alert("Insufficient balance including tax!");
+                return;
+            }
+
+            // Generate a unique transaction ID and receipt number
+            let transactionId = 'TX' + Date.now(); // Example: TX1632025260835
+            let receiptNumber = Math.floor(Math.random() * 1000000000);
+
+            // Simulate transaction (including tax)
+            users[currentUser].balance -= totalAmount;
+            users[receiver].balance += amount; // Transfer only the original amount, tax goes to the platform
+
+            let transaction = {
+                id: transactionId,
+                receiptNumber: receiptNumber,
+                date: new Date().toLocaleString(),
+                sender: currentUser,
+                receiver: receiver,
+                amount: amount,
+                tax: taxAmount,
+                totalAmount: totalAmount
+            };
+
+            // Log transaction for both sender and receiver
+            users[currentUser].transactions.push(transaction);
+            users[receiver].transactions.push(transaction);
+
+            // Log the tax deduction (for reporting purposes)
+            console.log(`Tax Collected: ${taxAmount} SDC`);
+
+            updateBalance();
+            addTransaction();
+        });
+
+        // Display transactions with details like transaction ID, receipt number, date/time, tax info
+        function addTransaction() {
+            const transactionList = document.getElementById('transaction-history');
+            transactionList.innerHTML = ''; // Clear the list
+
+            users[currentUser].transactions.forEach(transaction => {
+                const transactionItem = document.createElement('li');
+                transactionItem.classList.add('transaction-details');
+                transactionItem.innerHTML = `
+                    <strong>Transaction ID:</strong> ${transaction.id} <br>
+                    <strong>Receipt No:</strong> ${transaction.receiptNumber} <br>
+                    <strong>Date:</strong> ${transaction.date} <br>
+                    <strong>From:</strong> ${transaction.sender} <br>
+                    <strong>To:</strong> ${transaction.receiver} <br>
+                    <strong>Amount:</strong> ${transaction.amount} SDC <br>
+                    <strong>Tax:</strong> ${transaction.tax} SDC <br>
+                    <strong>Total (including tax):</strong> ${transaction.totalAmount} SDC
+                `;
+                transactionList.appendChild(transactionItem);
+            });
+        }
+
+        // Check balance function
+        function checkBalance() {
+            updateBalance();
+        }
+    </script>
+
+</body>
+</html>
