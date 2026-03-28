@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDC Financial Securities Platform</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background-color: #00796b;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        header img {
+            max-width: 150px;
+            margin-bottom: 10px;
+        }
+        section {
+            padding: 20px;
+            margin: 10px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            background-color: #00796b;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #004d40;
+        }
+        input, label {
+            display: block;
+            margin: 10px 0;
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #00796b;
+            color: white;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <!-- Add the SadiCoin Tech Logo -->
+        <img src="https://example.com/sadicoin-logo.png" alt="SadiCoin Tech Logo">
+        <h1>SDC Financial Securities Platform</h1>
+    </header>
+
+    <section id="generate-security-section">
+        <h2>Create Security Asset</h2>
+        <form id="create-security-form">
+            <label for="security-type">Security Type:</label>
+            <select id="security-type">
+                <option value="bond">Bond</option>
+                <option value="stock">Stock</option>
+                <option value="note">Note</option>
+            </select>
+            
+            <label for="security-value">Security Value (USD):</label>
+            <input type="number" id="security-value" required>
+
+            <label for="tax-rate">Transaction Tax (%)</label>
+            <input type="number" id="tax-rate" value="15" required>
+
+            <label for="holder-name">Holder Name:</label>
+            <input type="text" id="holder-name" required>
+
+            <button type="submit">Generate Security</button>
+        </form>
+    </section>
+
+    <section id="security-details-section">
+        <h2>Security Details</h2>
+        <div id="security-details">
+            <p>Security ID: <span id="security-id"></span></p>
+            <p>Holder Name: <span id="holder-name-display"></span></p>
+            <p>Value: <span id="security-value-display"></span> USD</p>
+            <p>Tax Deduction: <span id="tax-deduction-display"></span> USD</p>
+            <p>Total After Tax: <span id="total-after-tax-display"></span> USD</p>
+        </div>
+        <button id="download-pdf-btn">Download PDF</button>
+        <button id="download-csv-btn">Download CSV</button>
+        <button id="download-xml-btn">Download XML</button>
+        <button id="download-xlsx-btn">Download XLSX</button>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 SadiCoin Tech | All Rights Reserved</p>
+        <p>Address: SadiCoin Tech, 123 Blockchain Road, Cityville, Country</p>
+        <p>Email: <a href="mailto:bfmuneri@sacreserve.africa">bfmuneri@sacreserve.africa</a></p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <script>
+        // Variables to hold security details
+        let securityId = '';
+        let taxDeduction = 0;
+        let totalAfterTax = 0;
+
+        // Handle form submission to generate security
+        document.getElementById('create-security-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Fetch form values
+            const securityType = document.getElementById('security-type').value;
+            const securityValue = parseFloat(document.getElementById('security-value').value);
+            const taxRate = parseFloat(document.getElementById('tax-rate').value);
+            const holderName = document.getElementById('holder-name').value;
+
+            // Generate unique security ID (example)
+            securityId = 'SEC' + Date.now();
+
+            // Calculate tax deduction
+            taxDeduction = (taxRate / 100) * securityValue;
+            totalAfterTax = securityValue - taxDeduction;
+
+            // Update the display of security details
+            document.getElementById('security-id').textContent = securityId;
+            document.getElementById('holder-name-display').textContent = holderName;
+            document.getElementById('security-value-display').textContent = securityValue.toFixed(2);
+            document.getElementById('tax-deduction-display').textContent = taxDeduction.toFixed(2);
+            document.getElementById('total-after-tax-display').textContent = totalAfterTax.toFixed(2);
+        });
+
+        // Function to download the security details as PDF
+        document.getElementById('download-pdf-btn').addEventListener('click', function() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Add content to PDF
+            doc.text('Security Asset Details', 20, 20);
+            doc.text(`Security ID: ${securityId}`, 20, 30);
+            doc.text(`Holder Name: ${document.getElementById('holder-name-display').textContent}`, 20, 40);
+            doc.text(`Value: $${document.getElementById('security-value-display').textContent}`, 20, 50);
+            doc.text(`Tax Deduction: $${document.getElementById('tax-deduction-display').textContent}`, 20, 60);
+            doc.text(`Total After Tax: $${document.getElementById('total-after-tax-display').textContent}`, 20, 70);
+
+            // Save PDF
+            doc.save(`${securityId}_security_details.pdf`);
+        });
+
+        // Function to download the security details as CSV
+        document.getElementById('download-csv-btn').addEventListener('click', function() {
+            const csvContent = `Security ID,Holder Name,Value,Tax Deduction,Total After Tax\n` +
+                `${securityId},${document.getElementById('holder-name-display').textContent},${document.getElementById('security-value-display').textContent},${document.getElementById('tax-deduction-display').textContent},${document.getElementById('total-after-tax-display').textContent}`;
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            if (link.download !== undefined) { // feature detection for HTML5 download attribute
+                link.href = URL.createObjectURL(blob);
+                link.download = `${securityId}_security_details.csv`;
+                link.click();
+            }
+        });
+
+        // Function to download the security details as XML
+        document.getElementById('download-xml-btn').addEventListener('click', function() {
+            const xmlContent = `
+            <?xml version="1.0" encoding="UTF-8"?>
+            <security>
+                <securityId>${securityId}</securityId>
+                <holderName>${document.getElementById('holder-name-display').textContent}</holderName>
+                <value>${document.getElementById('security-value-display').textContent}</value>
+                <taxDeduction>${document.getElementById('tax-deduction-display').textContent}</taxDeduction>
+                <totalAfterTax>${document.getElementById('total-after-tax-display').textContent}</totalAfterTax>
+            </security>`;
+
+            const blob = new Blob([xmlContent], { type: 'application/xml;charset=utf-8;' });
+            const link = document.createElement('a');
+            if (link.download !== undefined) { // feature detection for HTML5 download attribute
+                link.href = URL.createObjectURL(blob);
+                link.download = `${securityId}_security_details.xml`;
+                link.click();
+            }
+        });
+
+        // Function to download the security details as XLSX
+        document.getElementById('download-xlsx-btn').addEventListener('click', function() {
+            const ws_data = [
+              Here’s the remaining part of the code to complete the XLSX download functionality:
+Html
+Copy code
+["Security ID", "Holder Name", "Value", "Tax Deduction", "Total After Tax"],
+                [securityId, document.getElementById('holder-name-display').textContent, document.getElementById('security-value-display').textContent, document.getElementById('tax-deduction-display').textContent, document.getElementById('total-after-tax-display').textContent]
+            ];
+
+            const ws = XLSX.utils.aoa_to_sheet(ws_data);  // Convert data to sheet
+            const wb = XLSX.utils.book_new();  // Create a new workbook
+            XLSX.utils.book_append_sheet(wb, ws, 'Security Details');  // Append the sheet to the workbook
+
+            // Save the workbook as XLSX
+            XLSX.writeFile(wb, `${securityId}_security_details.xlsx`);
+        });
+    </script>
+</body>
+</html>
