@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -214,10 +215,7 @@
             document.getElementById('login-section').classList.remove('hidden');
         }
 
-        Here’s the remaining part of your code:
-Html
-Copy code
-// Handle user signup
+       // Handle user signup
         document.getElementById('signup-form').addEventListener('submit', function(e) {
             e.preventDefault();
 
@@ -287,7 +285,7 @@ Copy code
 
             let receiver = document.getElementById('receiver-address').value;
             let amount = parseFloat(document.getElementById('amount').value);
-            let taxRate = parseFloat(document.getElementById('tax-rate').value);
+            let taxRate = 15; // 15% tax rate for every transaction
 
             if (!users[receiver]) {
                 alert("Receiver does not exist!");
@@ -335,6 +333,7 @@ Copy code
 
             updateBalance();
             addTransaction();
+            downloadReceipt(transaction); // Download receipt automatically after transaction
         });
 
         // Display transactions with details like transaction ID, receipt number, date/time, tax info
@@ -357,6 +356,19 @@ Copy code
                 `;
                 transactionList.appendChild(transactionItem);
             });
+        }
+
+        // Function to download receipt as a PDF
+        function downloadReceipt(transaction) {
+            const doc = new jsPDF();
+            doc.text(`Receipt for Transaction ID: ${transaction.id}`, 10, 10);
+            doc.text(`Date: ${transaction.date}`, 10, 20);
+            doc.text(`From: ${transaction.sender}`, 10, 30);
+            doc.text(`To: ${transaction.receiver}`, 10, 40);
+            doc.text(`Amount: ${transaction.amount} SDC`, 10, 50);
+            doc.text(`Tax: ${transaction.tax} SDC`, 10, 60);
+            doc.text(`Total (including tax): ${transaction.totalAmount} SDC`, 10, 70);
+            doc.save(`receipt_${transaction.receiptNumber}.pdf`);
         }
 
         // MoMo payment integration
