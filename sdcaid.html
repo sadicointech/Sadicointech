@@ -6,7 +6,7 @@
     <title>SDC SDG GRANT PROTOTYPE Platform</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
             background-color: #121212;
@@ -55,18 +55,32 @@
         .hidden {
             display: none;
         }
-        #transaction-history {
-            list-style-type: none;
-            padding: 0;
+        .card {
+            padding: 20px;
+            margin: 10px;
+            background-color: #444;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
         }
-        #transaction-history li {
-            margin: 5px 0;
+        .card h3 {
+            margin-bottom: 10px;
         }
         .transaction-details {
             background-color: #333;
             padding: 10px;
             margin: 5px 0;
             border-radius: 5px;
+        }
+        .transaction-history ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .transaction-history li {
+            margin: 10px 0;
+        }
+        #crypto-rates {
+            margin-top: 20px;
+            text-align: center;
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
@@ -78,7 +92,7 @@
     </header>
 
     <!-- Login Section -->
-    <section id="login-section">
+    <section id="login-section" class="card">
         <h2>Login</h2>
         <form id="login-form">
             <label for="login-username">Username:</label>
@@ -91,7 +105,7 @@
     </section>
 
     <!-- Signup Section -->
-    <section id="signup-section" class="hidden">
+    <section id="signup-section" class="card hidden">
         <h2>Create Account</h2>
         <form id="signup-form">
             <label for="signup-username">Username:</label>
@@ -104,7 +118,7 @@
     </section>
 
     <!-- Wallet Section -->
-    <section id="wallet-section" class="hidden">
+    <section id="wallet-section" class="card hidden">
         <h2>Your Wallet</h2>
         <p id="wallet-balance">Balance: 0.00 SDC</p>
         <p id="usd-equivalent">Equivalent in USD: 0.00 USD</p>
@@ -113,18 +127,20 @@
     </section>
 
     <!-- Transaction History Section -->
-    <section id="transactions-section" class="hidden">
+    <section id="transactions-section" class="card hidden">
         <h2>Transaction History</h2>
-        <ul id="transaction-history">
-            <li>No transactions yet.</li>
-        </ul>
+        <div id="transaction-history">
+            <ul>
+                <li>No transactions yet.</li>
+            </ul>
+        </div>
         <button onclick="downloadCSV()">Download CSV</button>
         <button onclick="downloadPDF()">Download PDF</button>
         <button onclick="downloadReceipt()">Download Receipt</button>
     </section>
 
     <!-- Send/Receive Section -->
-    <section id="send-receive-section" class="hidden">
+    <section id="send-receive-section" class="card hidden">
         <h2>Send/Receive SDC</h2>
         <form id="send-form">
             <label for="receiver-address">Receiver Username:</label>
@@ -138,7 +154,7 @@
     </section>
 
     <!-- MoMo Payment Section -->
-    <section id="momo-payment-section" class="hidden">
+    <section id="momo-payment-section" class="card hidden">
         <h2>Make MoMo Payment</h2>
         <form id="momo-form">
             <label for="momo-phone">Phone Number:</label>
@@ -149,26 +165,41 @@
         </form>
     </section>
 
+    <div id="crypto-rates" class="card hidden">
+        <h3>Live Crypto Rates</h3>
+        <p>Bitcoin (BTC): <span id="btc-rate">Loading...</span></p>
+        <p>Ethereum (ETH): <span id="eth-rate">Loading...</span></p>
+    </div>
+
     <footer>
         <p>&copy; 2025 SADC CBDC Platform | All Rights Reserved</p>
     </footer>
 
     <script>
-        const API_KEY = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'; // MoMo API Key
-        const PRIMARY_KEY = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'; // MoMo Primary Key
-        const SECONDARY_KEY = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'; // MoMo Secondary Key
+        const API_KEY = '67b2d451e5b8a8.90504186'; // EODHD API Key for FX rates (SDC to USD)
         const MOMO_API_URL = 'https://api.mtn.com/momo/payment'; // MoMo API endpoint
+        const COINGECKO_API_URL = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd'; // CoinGecko API for crypto rates
 
         let users = {}; // Simulated user database
         let currentUser = null;
-        let sdcToUsdRate = 0.90; // Default SDC to USD exchange rate
+        let sdcToUsdRate = 0.90; // Default SDC to USD rate (if not fetched live)
+        let sdcTokenBuyRate = 1.00; // SDC Token buy rate
+        let sdcTokenSellRate = 1.10; // SDC Token sell rate
 
-        // Fetch live FX Rate (SDC:USD) using an external API
+        // Fetch live FX Rate (SDC:USD) from EODHD API
         async function fetchLiveFXRate() {
-            const response = await fetch('https://api.exchangerate-api.com/v4/latest/SDC');
+            const response = await fetch(`https://api.eodhd.com/latest/SDC/USD?apiKey=${API_KEY}`);
             const data = await response.json();
             sdcToUsdRate = data.rates.USD; // Update the live SDC to USD rate
             updateBalance();
+        }
+
+        // Fetch live crypto rates from CoinGecko (Bitcoin and Ethereum)
+        async function fetchCryptoRates() {
+            const response = await fetch(COINGECKO_API_URL);
+            const data = await response.json();
+            document.getElementById('btc-rate').innerText = `$${data.bitcoin.usd}`;
+            document.getElementById('eth-rate').innerText = `$${data.ethereum.usd}`;
         }
 
         // Function to show signup form
@@ -183,7 +214,10 @@
             document.getElementById('login-section').classList.remove('hidden');
         }
 
-        // Handle user signup
+        Here’s the remaining part of your code:
+Html
+Copy code
+// Handle user signup
         document.getElementById('signup-form').addEventListener('submit', function(e) {
             e.preventDefault();
 
@@ -214,6 +248,7 @@
                 currentUser = username;
                 showWallet();
                 fetchLiveFXRate(); // Fetch live FX rate when user logs in
+                fetchCryptoRates(); // Fetch crypto rates on login
             } else {
                 alert("Invalid username or password");
             }
@@ -225,7 +260,9 @@
             document.getElementById('signup-section').classList.add('hidden');
             document.getElementById('wallet-section').classList.remove('hidden');
             document.getElementById('transactions-section').classList.remove('hidden');
-            document.getElementById('send-receive-section').classList.remove('hiddenpdateBalance();
+            document.getElementById('send-receive-section').classList.remove('hidden');
+            document.getElementById('crypto-rates').classList.remove('hidden');
+            updateBalance();
         }
 
         // Logout the user
@@ -242,78 +279,6 @@
                 const usdEquivalent = (balanceInSdc * sdcToUsdRate).toFixed(2);
                 document.getElementById('usd-equivalent').innerText = `Equivalent in USD: $${usdEquivalent}`;
             }
-        }
-
-        // Function to download the transaction history as CSV
-        function downloadCSV() {
-            let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += "Transaction ID,Receipt No,Date,From,To,Amount,Tax,Total\n";
-            users[currentUser].transactions.forEach(transaction => {
-                let row = [
-                    transaction.id,
-                    transaction.receiptNumber,
-                    transaction.date,
-                    transaction.sender,
-                    transaction.receiver,
-                    transaction.amount,
-                    transaction.tax,
-                    transaction.totalAmount
-                ].join(",");
-                csvContent += row + "\n";
-            });
-
-            let encodedUri = encodeURI(csvContent);
-            let link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "transaction_history.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        // Function to download the transaction history as PDF
-        function downloadPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            doc.text("Transaction History", 14, 20);
-            users[currentUser].transactions.forEach((transaction, index) => {
-                let yOffset = 30 + (index * 30);
-                doc.text(`Transaction ID: ${transaction.id}`, 14, yOffset);
-                doc.text(`Receipt No: ${transaction.receiptNumber}`, 14, yOffset + 10);
-                doc.text(`Date: ${transaction.date}`, 14, yOffset + 20);
-                doc.text(`From: ${transaction.sender}`, 14, yOffset + 30);
-                doc.text(`To: ${transaction.receiver}`, 14, yOffset + 40);
-                doc.text(`Amount: ${transaction.amount} SDC`, 14, yOffset + 50);
-                doc.text(`Tax: ${transaction.tax} SDC`, 14, yOffset + 60);
-                doc.text(`Total (including tax): ${transaction.totalAmount} SDC`, 14, yOffset + 70);
-            });
-
-            doc.save("transaction_history.pdf");
-        }
-
-        // Function to download a receipt for a transaction
-        function downloadReceipt() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            let transaction = users[currentUser].transactions[users[currentUser].transactions.length - 1];
-            if (!transaction) {
-                alert("No transactions to generate receipt.");
-                return;
-            }
-
-            doc.text("Payment Receipt", 14, 20);
-            doc.text(`Transaction ID: ${transaction.id}`, 14, 30);
-            doc.text(`Receipt No: ${transaction.receiptNumber}`, 14, 40);
-            doc.text(`Date: ${transaction.date}`, 14, 50);
-            doc.text(`From: ${transaction.sender}`, 14, 60);
-            doc.text(`To: ${transaction.receiver}`, 14, 70);
-            doc.text(`Amount: ${transaction.amount} SDC`, 14, 80);
-            doc.text(`Tax: ${transaction.tax} SDC`, 14, 90);
-            doc.text(`Total: ${transaction.totalAmount} SDC`, 14, 100);
-
-            doc.save(`receipt_${transaction.id}.pdf`);
         }
 
         // Simulate sending SDC to another user with tax calculation
@@ -409,9 +374,7 @@
             let paymentDetails = {
                 phoneNumber: phoneNumber,
                 amount: momoAmount,
-                currency: 'ZAR',
-                primaryKey: PRIMARY_KEY,
-                secondaryKey: SECONDARY_KEY
+                currency: 'ZAR'
             };
 
             makeMoMoPayment(paymentDetails);
@@ -420,7 +383,7 @@
         // Function to make MoMo payment
         async function makeMoMoPayment(details) {
             const headers = new Headers();
-            headers.append("Authorization", `Bearer ${PRIMARY_KEY}:${SECONDARY_KEY}`);
+            headers.append("Authorization", `Bearer ${API_KEY}`);
             headers.append("Content-Type", "application/json");
 
             try {
@@ -448,6 +411,7 @@
                 alert('Error processing MoMo payment.');
             }
         }
+
     </script>
 
 </body>
