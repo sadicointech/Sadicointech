@@ -1,227 +1,132 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <title>SadiCoin Investment & ETF Platform Prototype</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
-    /* Basic Reset */
-    * {
+    /* General CSS */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #121212;
+      color: #ffffff;
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
     }
 
-    body {
-      font-family: 'Arial', sans-serif;
-      background: #111;
-      color: #fff;
-      line-height: 1.6;
-    }
-
-    h1, h3, h2, p {
-      font-family: 'Arial', sans-serif;
-    }
-
-    header, footer {
-      background: #2d2d2d;
-      padding: 10px 20px;
+    header {
+      background-color: #1c1c1c;
+      padding: 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      color: #fff;
     }
 
     header h3 {
-      font-size: 1.5rem;
+      font-size: 24px;
+      color: #f1f1f1;
     }
 
-    footer {
-      background: #222;
-      text-align: center;
-      font-size: 0.8rem;
-      padding: 10px 0;
-    }
-
-    footer a {
-      color: #56c9ff;
-      text-decoration: none;
-    }
-
-    .logo {
-      height: 40px;
-      width: auto;
+    header img {
+      width: 100px;
+      height: auto;
     }
 
     .app {
-      margin: 20px;
-      background: linear-gradient(135deg, rgba(9, 121, 182, 0.1), rgba(12, 34, 51, 0.7));
       padding: 20px;
-      border-radius: 8px;
-    }
-
-    h1 {
-      text-align: center;
-      font-size: 2rem;
-      color: #fff;
-      margin-bottom: 10px;
-    }
-
-    .muted {
-      font-size: 0.9rem;
-      color: #aaa;
     }
 
     .cards {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      grid-template-columns: repeat(2, 1fr);
       gap: 20px;
     }
 
     .card {
-      background: #222;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      background-color: #333333;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     }
 
-    .card h3 {
-      color: #56c9ff;
-      font-size: 1.4rem;
-      margin-bottom: 10px;
+    h1, h3 {
+      color: #f1f1f1;
     }
 
     label {
-      font-size: 0.9rem;
-      color: #ddd;
+      color: #f1f1f1;
+      margin-top: 10px;
     }
 
     input, select, button {
-      background: #333;
-      border: 1px solid #444;
-      color: #fff;
-      padding: 10px;
-      border-radius: 5px;
-      margin: 10px 0;
       width: 100%;
-    }
-
-    input:focus, select:focus, button:focus {
-      outline: none;
-      border-color: #56c9ff;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #555555;
+      background-color: #222222;
+      color: #f1f1f1;
     }
 
     button {
-      background: #1f88ff;
-      border: 1px solid #56c9ff;
       cursor: pointer;
+      background-color: #007BFF;
+      color: white;
+      border: none;
     }
 
     button:hover {
-      background: #56c9ff;
+      background-color: #0056b3;
     }
 
     .out {
-      background: #333;
-      color: #fff;
-      padding: 15px;
+      background-color: #444444;
+      padding: 10px;
       margin-top: 10px;
       border-radius: 5px;
+      color: #f1f1f1;
+      font-size: 14px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      background-color: #1c1c1c;
+      color: #f1f1f1;
+    }
+
+    .muted {
+      color: #888888;
     }
 
     .row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
+      margin-bottom: 15px;
     }
-
-    .row div {
-      flex: 1;
-    }
-
+    
     .actions {
       display: flex;
-      gap: 10px;
-      margin-top: 10px;
+      justify-content: space-between;
     }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
+    
+    .actions button {
+      width: 48%;
     }
-
-    table, th, td {
-      border: 1px solid #444;
-    }
-
-    th, td {
-      padding: 10px;
-      text-align: left;
-    }
-
-    th {
-      background: #222;
-      color: #56c9ff;
-    }
-
-    tr:nth-child(even) {
-      background: #2b2b2b;
-    }
-
-    tr:hover {
-      background: #444;
-    }
-
-    .card button:active {
-      background: #005fbf;
-    }
-
-    #chartBox {
-      min-height: 200px;
-      border: 1px solid #444;
-      padding: 20px;
-      margin-top: 10px;
-      background: #333;
-      text-align: center;
-    }
-
-    /* Dark theme for the certificate generation section */
-    #btnGenerateCertificate {
-      background: #1f88ff;
-      color: #fff;
-      padding: 10px;
-      width: auto;
-      cursor: pointer;
-      border: none;
-      border-radius: 5px;
-    }
-
-    #btnGenerateCertificate:hover {
-      background: #56c9ff;
-    }
-
-    /* Footer for dark mode */
-    footer {
-      background: #222;
-      color: #ddd;
-      padding: 15px;
-      text-align: center;
-      font-size: 0.9rem;
-    }
-
-    footer a {
-      color: #56c9ff;
-      text-decoration: none;
+    
+    /* Dark Mode Customizations */
+    .dark-theme {
+      background-color: #121212;
+      color: #ffffff;
     }
   </style>
 </head>
-<body>
+<body class="dark-theme">
   <header class="d-flex align-items-center justify-content-between mb-4">
     <img src="ChatGPT Image Sep 11, 2025, 03_15_36 PM.png" alt="SCB Logo" class="logo">
     <h3>SADC Wallet</h3>
   </header>
+
   <div class="app">
     <header>
       <h1>SadiCoin Investment & ETF Platform</h1>
@@ -233,31 +138,27 @@
       <div class="card">
         <h3>Inputs</h3>
         <div class="row">
-          <div>
-            <label>Future Value (FV)</label>
-            <input id="fv" type="number" step="0.01" value="10">
-          </div>
-          <div>
-            <label>Annual Rate (%)</label>
-            <input id="rate" type="number" step="0.01" value="8.25">
-          </div>
+          <label>Future Value (FV)</label>
+          <input id="fv" type="number" step="0.01" value="10">
         </div>
         <div class="row">
-          <div>
-            <label>Years (n)</label>
-            <input id="years" type="number" step="0.01" value="1">
-          </div>
-          <div>
-            <label>Compounding</label>
-            <select id="cmp">
-              <option value="1">Annual</option>
-              <option value="2">Semiannual</option>
-              <option value="4">Quarterly</option>
-              <option value="12">Monthly</option>
-              <option value="365">Daily</option>
-              <option value="cont">Continuous</option>
-            </select>
-          </div>
+          <label>Annual Rate (%)</label>
+          <input id="rate" type="number" step="0.01" value="8.25">
+        </div>
+        <div class="row">
+          <label>Years (n)</label>
+          <input id="years" type="number" step="0.01" value="1">
+        </div>
+        <div class="row">
+          <label>Compounding</label>
+          <select id="cmp">
+            <option value="1">Annual</option>
+            <option value="2">Semiannual</option>
+            <option value="4">Quarterly</option>
+            <option value="12">Monthly</option>
+            <option value="365">Daily</option>
+            <option value="cont">Continuous</option>
+          </select>
         </div>
 
         <div class="row">
@@ -266,57 +167,55 @@
         </div>
 
         <div id="result" class="out">Enter inputs and press Calculate.</div>
-
       </div>
 
       <!-- FX Settings -->
       <div class="card">
         <h3>FX Settings</h3>
         <div class="row">
-          <div>
-            <label>Base Currency (your cash)</label>
-            <select id="baseCcy"><option>ZAR</option><option>USD</option><option>BWP</option><option>MZN</option></select>
-          </div>
-          <div>
-            <label>Investment Currency</label>
-            <select id="invCcy"><option>USD</option><option>ZAR</option><option>BWP</option><option>MZN</option><option>SADICOIN</option></select>
-          </div>
+          <label>Base Currency (your cash)</label>
+          <select id="baseCcy">
+            <option>ZAR</option>
+            <option>USD</option>
+            <option>BWP</option>
+            <option>MZN</option>
+          </select>
         </div>
         <div class="row">
-          <div>
-            <label>Spot Rate (Base per 1 Investment)</label>
-            <input id="spot" type="number" step="0.0001" placeholder="e.g. 18.50">
-          </div>
-          <div>
-            <label>&nbsp;</label>
-            <button id="btnFetchFx">Fetch FX (fiat only)</button>
-          </div>
+          <label>Investment Currency</label>
+          <select id="invCcy">
+            <option>USD</option>
+            <option>ZAR</option>
+            <option>BWP</option>
+            <option>MZN</option>
+            <option>SADICOIN</option>
+          </select>
         </div>
-
         <div class="row">
-          <div>
-            <label>Entry Spread % (buy)</label>
-            <input id="spreadIn" type="number" step="0.01" value="0.50">
-          </div>
-          <div>
-            <label>Exit Spread % (sell)</label>
-            <input id="spreadOut" type="number" step="0.01" value="0.50">
-          </div>
+          <label>Spot Rate (Base per 1 Investment)</label>
+          <input id="spot" type="number" step="0.0001" placeholder="e.g. 18.50">
+        </div>
+        <div class="row">
+          <button id="btnFetchFx">Fetch FX (fiat only)</button>
         </div>
 
         <div class="row">
-          <div>
-            <label>Expected FX Change over Term %</label>
-            <input id="fxDrift" type="number" step="0.01" value="0">
-          </div>
-          <div>
-            <label>Show FX-Adjusted Summary</label>
-            <button id="btnFxPreview">Preview FX Impact</button>
-          </div>
+          <label>Entry Spread % (buy)</label>
+          <input id="spreadIn" type="number" step="0.01" value="0.50">
+        </div>
+        <div class="row">
+          <label>Exit Spread % (sell)</label>
+          <input id="spreadOut" type="number" step="0.01" value="0.50">
+        </div>
+        <div class="row">
+          <label>Expected FX Change over Term %</label>
+          <input id="fxDrift" type="number" step="0.01" value="0">
+        </div>
+        <div class="row">
+          <button id="btnFxPreview">Preview FX Impact</button>
         </div>
 
         <div id="fxPreview" class="out">Set currencies and click Preview.</div>
-
       </div>
     </section>
 
@@ -333,7 +232,11 @@
         <label>Branch Code</label>
         <input id="branchCode" type="text" placeholder="Enter branch code">
         <label>Account Type</label>
-        <select id="accountType"><option value="savings">Savings</option><option value="cheque">Cheque</option><option value="business">Business</option></select>
+        <select id="accountType">
+          <option value="savings">Savings</option>
+          <option value="cheque">Cheque</option>
+          <option value="business">Business</option>
+        </select>
       </div>
 
       <div class="card">
@@ -341,11 +244,17 @@
         <label>Deposit Amount (Base)</label>
         <input id="depositAmt" type="number" step="0.01" value="1000">
         <label>Maturity Period (days)</label>
-        <select id="maturityOption"><option value="365">365</option><option value="180">180</option><option value="90">90</option><option value="30">30</option><option value="custom">custom</option></select>
+        <select id="maturityOption">
+          <option value="365">365</option>
+          <option value="180">180</option>
+          <option value="90">90</option>
+          <option value="30">30</option>
+          <option value="custom">custom</option>
+        </select>
         <input id="customMaturity" type="number" placeholder="Enter custom days" style="display:none;margin-top:8px">
         <label>Annual Rate (%)</label>
         <input id="depRate" type="number" step="0.01" value="8.25">
-        <div class="actions" style="margin-top:10px">
+        <div class="actions">
           <button id="btnDeposit">Deposit Investment</button>
           <button id="downloadTx">Download Transactions CSV</button>
         </div>
@@ -356,7 +265,21 @@
         <div style="overflow:auto;max-height:260px">
           <table id="txTable">
             <thead>
-              <tr><th>ID</th><th>Date</th><th>Investor</th><th>Deposit (Base)</th><th>Base→Inv Spot</th><th>Entry/Exit Spreads</th><th>Maturity (days)</th><th>Rate %</th><th>Maturity Value (Inv)</th><th>FX @ Maturity</th><th>Projected Value (Base)</th><th>Net P&L</th><th>Status</th></tr>
+              <tr>
+                <th>ID</th>
+                <th>Date</th>
+                <th>Investor</th>
+                <th>Deposit (Base)</th>
+                <th>Base→Inv Spot</th>
+                <th>Entry/Exit Spreads</th>
+                <th>Maturity (days)</th>
+                <th>Rate %</th>
+                <th>Maturity Value (Inv)</th>
+                <th>FX @ Maturity</th>
+                <th>Projected Value (Base)</th>
+                <th>Net P&L</th>
+                <th>Status</th>
+              </tr>
             </thead>
             <tbody></tbody>
           </table>
@@ -385,27 +308,35 @@
             <label>Quantity</label>
             <input id="etfQty" type="number" step="1" value="1">
           </div>
+        </div>
         <div class="row">
           <div>
             <label>Order Type</label>
-            <select id="orderType"><option value="market">market</option><option value="limit">limit</option></select>
+            <select id="orderType">
+              <option value="market">market</option>
+              <option value="limit">limit</option>
+            </select>
           </div>
           <div>
             <label>Time in Force</label>
-            <select id="tif"><option value="day">day</option><option value="gtc">gtc</option><option value="ioc">ioc</option><option value="fok">fok</option></select>
+            <select id="tif">
+              <option value="day">day</option>
+              <option value="gtc">gtc</option>
+              <option value="ioc">ioc</option>
+              <option value="fok">fok</option>
+            </select>
           </div>
         </div>
         <div id="limitPriceRow" style="display:none">
           <label>Limit Price</label>
           <input id="limitPrice" type="number" step="0.01" placeholder="e.g. 550.00">
         </div>
-        <div class="actions" style="margin-top:10px">
+        <div class="actions">
           <button id="btnBuy">BUY</button>
           <button id="btnSell">SELL</button>
         </div>
 
         <div id="tradeOutput" class="out">Enter symbol/qty and click Buy or Sell. Use Proxy for real paper orders.</div>
-
       </div>
     </section>
 
@@ -436,63 +367,6 @@
       customMaturity.style.display = maturityOption.value === 'custom' ? 'block' : 'none';
     });
 
-    // Load data from localStorage if available
-    window.onload = () => {
-      const savedInvestorDetails = JSON.parse(localStorage.getItem('investorDetails'));
-      if (savedInvestorDetails) {
-        document.getElementById('investorName').value = savedInvestorDetails.investorName || '';
-        document.getElementById('bankName').value = savedInvestorDetails.bankName || '';
-        document.getElementById('accountNumber').value = savedInvestorDetails.accountNumber || '';
-        document.getElementById('branchCode').value = savedInvestorDetails.branchCode || '';
-        document.getElementById('accountType').value = savedInvestorDetails.accountType || 'savings';
-      }
-
-      const savedInputs = JSON.parse(localStorage.getItem('investmentInputs'));
-      if (savedInputs) {
-        document.getElementById('fv').value = savedInputs.FV || 10;
-        document.getElementById('rate').value = savedInputs.rate || 8.25;
-        document.getElementById('years').value = savedInputs.years || 1;
-        document.getElementById('cmp').value = savedInputs.cmp || '1';
-      }
-
-      const savedTxLog = JSON.parse(localStorage.getItem('transactionLog')) || [];
-      savedTxLog.forEach(tx => {
-        const row = txBody.insertRow();
-        Object.values(tx).forEach((val, index) => {
-          const cell = row.insertCell(index);
-          cell.textContent = val;
-        });
-      });
-    };
-
-    // Save investment data to localStorage
-    function saveInvestmentData() {
-      const FV = document.getElementById('fv').value;
-      const rate = document.getElementById('rate').value;
-      const years = document.getElementById('years').value;
-      const cmp = document.getElementById('cmp').value;
-      const investmentInputs = { FV, rate, years, cmp };
-      localStorage.setItem('investmentInputs', JSON.stringify(investmentInputs));
-    }
-
-    // Save investor details to localStorage
-    function saveInvestorDetails() {
-      const investorName = document.getElementById('investorName').value;
-      const bankName = document.getElementById('bankName').value;
-      const accountNumber = document.getElementById('accountNumber').value;
-      const branchCode = document.getElementById('branchCode').value;
-      const accountType = document.getElementById('accountType').value;
-      const investorDetails = { investorName, bankName, accountNumber, branchCode, accountType };
-      localStorage.setItem('investorDetails', JSON.stringify(investorDetails));
-    }
-
-    // Save transaction log to localStorage
-    function saveTransactionLog(transaction) {
-      let transactionLog = JSON.parse(localStorage.getItem('transactionLog')) || [];
-      transactionLog.push(transaction);
-      localStorage.setItem('transactionLog', JSON.stringify(transactionLog));
-    }
-
     // PV/FV calculator
     function calcOnce() {
       const FV = +document.getElementById('fv').value;
@@ -508,9 +382,6 @@
       }
       const ask = (FV - PV) / FV;
       document.getElementById('result').textContent = `PV=${PV.toFixed(4)} | Ask=${(ask*100).toFixed(2)}%`;
-
-      // Save investment data
-      saveInvestmentData();
       return { PV, ask, r, nYears };
     }
 
@@ -572,58 +443,13 @@
       return (amount * r * periods).toFixed(2);
     }
 
- // Custom function for calculating projected value at maturity
+    // Custom function for calculating projected value at maturity
     function calculateMaturityValue(amount, rate, days) {
       const r = rate / 100;
       const periods = days / 365;
       return (amount * (1 + r * periods)).toFixed(2);
     }
-
-    // Save data in localStorage when user interacts
-    document.getElementById('btnDeposit').addEventListener('click', () => {
-      // Save Bank & Deposit Details to localStorage
-      saveInvestorDetails();
-      // Get transaction details
-      const transaction = {
-        id: generateTransactionID(),
-        date: new Date().toLocaleDateString(),
-        investor: document.getElementById('investorName').value,
-        deposit: document.getElementById('depositAmt').value,
-        baseToInvSpot: document.getElementById('spot').value,
-        entryExitSpreads: `${document.getElementById('spreadIn').value} / ${document.getElementById('spreadOut').value}`,
-        maturityDays: document.getElementById('maturityOption').value,
-        rate: document.getElementById('depRate').value,
-        maturityValue: calculateMaturityValue(document.getElementById('depositAmt').value, document.getElementById('depRate').value, document.getElementById('maturityOption').value),
-        fxAtMaturity: document.getElementById('fxDrift').value, // Optional
-        projectedValueBase: calculateMaturityValue(document.getElementById('depositAmt').value, document.getElementById('depRate').value, document.getElementById('maturityOption').value),
-        netPL: 0, // Placeholder for future P&L calculation
-        status: 'Active'
-      };
-
-      // Insert transaction into the table
-      const row = txBody.insertRow();
-      Object.values(transaction).forEach((val, index) => {
-        const cell = row.insertCell(index);
-        cell.textContent = val;
-      });
-
-      // Save the transaction log to localStorage
-      saveTransactionLog(transaction);
-    });
-
-    // Load transaction log from localStorage when the page loads
-    window.onload = () => {
-      const savedTxLog = JSON.parse(localStorage.getItem('transactionLog')) || [];
-      savedTxLog.forEach(tx => {
-        const row = txBody.insertRow();
-        Object.values(tx).forEach((val, index) => {
-          const cell = row.insertCell(index);
-          cell.textContent = val;
-        });
-      };
-    };
   </script>
 </body>
 </html>
-
 
