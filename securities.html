@@ -1,9 +1,8 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>SadiCoin Investment & ETF Platform Prototype</title>
+  <title>SadiCoin Investment & CBDC Platform</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
@@ -122,7 +121,7 @@
 
   <div class="app">
     <header>
-      <h1>SadiCoin Investment & ETF Platform</h1>
+      <h1>SadiCoin Investment & CBDC Platform</h1>
       <p class="muted" style="text-align:center;margin:6px 0 0">Deposit • FX-Aware Yield • Auto Certificate • ETF Trading (Paper)</p>
     </header>
 
@@ -145,7 +144,7 @@
       </div>
     </section>
 
-    <!-- Bond Generation and Certificate Download -->
+    <!-- CBDC and Bond Generation -->
     <section class="cards">
       <div class="card">
         <h3>Bond Investment</h3>
@@ -205,13 +204,24 @@
       </div>
     </section>
 
-    <footer>
-      Bond Investment + Crypto Token
-    </footer>
+    <!-- CBDC Balance Section -->
+    <section id="balance-section">
+        <h3>Your CBDC Balance</h3>
+        <p><strong>Balance (SDC):</strong> <span id="balance-sdc">1000</span> SDC</p>
+        <p><strong>Balance (ZAR):</strong> <span id="balance-zar">1000</span> ZAR</p>
+        <p><strong>Digital Bank Account Number:</strong> <span id="account-number">+27 123 456 789</span></p>
+        <p><strong>Digital Card Number:</strong> <span id="card-number">XXXXXXXXXXXX1234</span></p>
+        <button onclick="checkBalance()">Check Balance</button>
+    </section>
 
+    <footer>
+        Bond Investment + Crypto Token
+    </footer>
+    
     <div class="security-seal">Security Seal</div>
   </div>
 
+  <script>
   <script>
     // Bond Yield Calculation and Certificate Generation
     document.getElementById('btnBondCalc').addEventListener('click', function() {
@@ -225,7 +235,7 @@
       // Populate bond results
       document.getElementById('bond-result').textContent = `Future Value of Bond after ${years} years: ZAR ${futureValue.toFixed(2)}`;
 
-    // Save bond data to localStorage
+      // Save bond data to localStorage
       localStorage.setItem('bondFV', fv);
       localStorage.setItem('bondRate', rate);
       localStorage.setItem('bondYears', years);
@@ -321,31 +331,108 @@
       XLSX.writeFile(wb, 'Investment_Receipt.xlsx');
     });
 
-    // Bond Yield Calculation Export to Excel
-    document.getElementById('btnDownloadBondCert').addEventListener('click', function() {
-      const bondData = [
-        ['Certificate Number', document.getElementById('cert-num').textContent],
-        ['Investor Name', document.getElementById('investor-name-display').textContent],
-        ['Bond Face Value', document.getElementById('bond-fv-display').textContent],
-        ['Annual Rate', document.getElementById('bond-rate-display').textContent],
-        ['Years', document.getElementById('bond-years-display').textContent],
-        ['Compounding', document.getElementById('bond-cmp-display').textContent],
-        ['Purchase Date', document.getElementById('purchase-date').textContent],
-        ['Maturity Date', document.getElementById('maturity-date').textContent],
-        ['Yield', document.getElementById('yield').textContent],
-        ['Ask Price', document.getElementById('ask-price').textContent],
-        ['Bid Price', document.getElementById('bid-price').textContent],
-        ['Discount Rate', document.getElementById('discount-rate').textContent],
-        ['Repo Rate', document.getElementById('repo-rate').textContent],
-        ['Price', document.getElementById('price').textContent]
-      ];
+    // Functions for CBDC Balance and MoMo Payment
+    let balanceSDC = 1000;  // 1000 SDC
+    let balanceZAR = 1000;  // 1000 ZAR
+    let transactions = [];  // Transaction history array
+    let userPhoneNumber = ''; // Store user's phone number after input
 
-      const ws = XLSX.utils.aoa_to_sheet(bondData);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'Bond Investment');
+    // Display balance (SDC and ZAR)
+    function checkBalance() {
+        document.getElementById('balance-sdc').innerText = balanceSDC;
+        document.getElementById('balance-zar').innerText = balanceZAR;
+    }
 
-      XLSX.writeFile(wb, 'Bond_Investment_Details.xlsx');
+    // Handle Phone Number Form Submission
+    document.getElementById('phone-number-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        userPhoneNumber = document.getElementById('user-phone-number').value;
+        alert('Phone Number Registered: ' + userPhoneNumber);
+        document.getElementById('phone-number-section').style.display = 'none';
+        document.getElementById('momo-payment-section').style.display = 'block';
     });
+
+    // Handle MoMo Payment Form Submission
+    document.getElementById('momo-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        let phoneNumber = document.getElementById('momo-phone').value;
+        let momoAmount = parseFloat(document.getElementById('momo-amount').value);
+
+        if (momoAmount <= 0 || momoAmount > balanceZAR) {
+            alert("Invalid amount for MoMo payment!");
+            return;
+        }
+
+        let paymentDetails = {
+            phoneNumber: phoneNumber,
+            amount: momoAmount,
+            currency: 'ZAR'
+        };
+
+        // MoMo Payment (Simulation for demo purpose)
+        alert(`Payment successful! ${momoAmount} ZAR sent to ${phoneNumber}`);
+        balanceZAR -= momoAmount;
+        balanceSDC -= momoAmount * 0.1;  // Assuming 1 ZAR = 0.1 SDC
+        let transaction = {
+            id: new Date().getTime(),
+            amount: momoAmount,
+            phone: phoneNumber,
+            date: new Date().toLocaleString(),
+            type: 'Payment'
+        };
+        transactions.push(transaction);
+        addTransactionToHistory(transaction);
+        checkBalance();  // Update the displayed balance
+    });
+
+    // Add transaction to the transaction history section
+    function addTransactionToHistory(transaction) {
+        const transactionHistory = document.getElementById('transaction-history');
+        const transactionElement = document.createElement('div');
+        transactionElement.classList.add('transaction-item');
+        transactionElement.innerHTML = `
+            <p><strong>Transaction ID:</strong> ${transaction.id}</p>
+            <p><strong>Amount:</strong> ${transaction.amount} ZAR</p>
+            <p><strong>Phone:</strong> ${transaction.phone}</p>
+            <p><strong>Date:</strong> ${transaction.date}</p>
+            <p><strong>Type:</strong> ${transaction.type}</p>
+        `;
+        transactionHistory.appendChild(transactionElement);
+    }
+
+    // Function to download transaction history as CSV
+    function downloadCSV() {
+        let csvContent = "Transaction ID,Amount,Phone,Date,Type\n";
+        transactions.forEach(function(transaction) {
+            csvContent += `${transaction.id},${transaction.amount},${transaction.phone},${transaction.date},${transaction.type}\n`;
+        });
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'transaction_history.csv';
+        link.click();
+    }
+
+    // Function to download transaction history as PDF
+    function downloadPDF() {
+        const doc = new jsPDF();
+        doc.text('Transaction History', 10, 10);
+
+        transactions.forEach((transaction, index) => {
+            doc.text(`Transaction ID: ${transaction.id}`, 10, 20 + (index * 30));
+            doc.text(`Amount: ${transaction.amount} ZAR`, 10, 30 + (index * 30));
+            doc.text(`Phone: ${transaction.phone}`, 10, 40 + (index * 30));
+            doc.text(`Date: ${transaction.date}`, 10, 50 + (index * 30));
+            doc.text(`Type: ${transaction.type}`, 10, 60 + (index * 30));
+        });
+
+        doc.save('transaction_history.pdf');
+    }
+
+    // Initialize the balance on page load
+    checkBalance();
   </script>
 </body>
 </html>
