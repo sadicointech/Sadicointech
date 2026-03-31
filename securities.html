@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -219,137 +218,35 @@
       </div>
     </section>
 
-    <!-- Bank & Deposit -->
+    <!-- Over the Counter Investment Details -->
     <section class="cards">
       <div class="card">
-        <h3>Bank & Investor Details</h3>
+        <h3>Investor & Over the Counter Details</h3>
         <label>Investor Name</label>
         <input id="investorName" type="text" placeholder="Enter investor name">
-        <label>Bank Name</label>
-        <input id="bankName" type="text" placeholder="e.g. Nedbank">
-        <label>Account Number</label>
-        <input id="accountNumber" type="text" placeholder="Enter account number">
-        <label>Branch Code</label>
-        <input id="branchCode" type="text" placeholder="Enter branch code">
-        <label>Account Type</label>
-        <select id="accountType">
-          <option value="savings">Savings</option>
-          <option value="cheque">Cheque</option>
-          <option value="business">Business</option>
+        <label>Investment Amount (Base)</label>
+        <input id="investAmount" type="number" step="0.01" value="1000">
+        <label>Investment Currency</label>
+        <select id="investmentCurrency">
+          <option value="ZAR">ZAR</option>
+          <option value="USD">USD</option>
+          <option value="SADICOIN">SADICOIN</option>
         </select>
+        <label>Amount to Convert to SDC</label>
+        <input id="amountToConvert" type="number" step="0.01" placeholder="Amount to Convert">
       </div>
 
+      <!-- SadiCoin Investment Certificate -->
       <div class="card">
-        <h3>Deposit & Investment</h3>
-        <label>Deposit Amount (Base)</label>
-        <input id="depositAmt" type="number" step="0.01" value="1000">
-        <label>Maturity Period (days)</label>
-        <select id="maturityOption">
-          <option value="365">365</option>
-          <option value="180">180</option>
-          <option value="90">90</option>
-          <option value="30">30</option>
-          <option value="custom">custom</option>
-        </select>
-        <input id="customMaturity" type="number" placeholder="Enter custom days" style="display:none;margin-top:8px">
-        <label>Annual Rate (%)</label>
-        <input id="depRate" type="number" step="0.01" value="8.25">
-        <div class="actions">
-          <button id="btnDeposit">Deposit Investment</button>
-          <button id="downloadTx">Download Transactions CSV</button>
-        </div>
+        <h3>Download SadiCoin Investment Certificate</h3>
+        <button id="btnGenerateCertificate">Generate Certificate</button>
       </div>
 
-      <div class="card" style="grid-column:1/-1">
-        <h3>Transaction Log</h3>
-        <div style="overflow:auto;max-height:260px">
-          <table id="txTable">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Date</th>
-                <th>Investor</th>
-                <th>Deposit (Base)</th>
-                <th>Base→Inv Spot</th>
-                <th>Entry/Exit Spreads</th>
-                <th>Maturity (days)</th>
-                <th>Rate %</th>
-                <th>Maturity Value (Inv)</th>
-                <th>FX @ Maturity</th>
-                <th>Projected Value (Base)</th>
-                <th>Net P&L</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="card" style="grid-column:1/-1">
-        <h3>Amortization Schedule (last transaction)</h3>
-        <div style="overflow:auto;max-height:320px">
-          <table id="amortTable">
-            <thead><tr><th>Txn ID</th><th>Period #</th><th>Frequency</th><th>Interest</th><th>Cumulative Interest</th><th>Total Value</th></tr></thead>
-            <tbody id="amortBody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- ETF Trading -->
-      <div class="card">
-        <h3>Buy / Sell ETF</h3>
-        <div class="row">
-          <div>
-            <label>Symbol</label>
-            <input id="etfSymbol" type="text" value="SPY" placeholder="e.g. SPY">
-          </div>
-          <div>
-            <label>Quantity</label>
-            <input id="etfQty" type="number" step="1" value="1">
-          </div>
-        </div>
-        <div class="row">
-          <div>
-            <label>Order Type</label>
-            <select id="orderType">
-              <option value="market">market</option>
-              <option value="limit">limit</option>
-            </select>
-          </div>
-          <div>
-            <label>Time in Force</label>
-            <select id="tif">
-              <option value="day">day</option>
-              <option value="gtc">gtc</option>
-              <option value="ioc">ioc</option>
-              <option value="fok">fok</option>
-            </select>
-          </div>
-        </div>
-        <div id="limitPriceRow" style="display:none">
-          <label>Limit Price</label>
-          <input id="limitPrice" type="number" step="0.01" placeholder="e.g. 550.00">
-        </div>
-        <div class="actions">
-          <button id="btnBuy">BUY</button>
-          <button id="btnSell">SELL</button>
-        </div>
-
-        <div id="tradeOutput" class="out">Enter symbol/qty and click Buy or Sell. Use Proxy for real paper orders.</div>
+      <div id="certificateDownload" class="out">
+        <p>Your investment certificate is ready to download. Click the button below to download your certificate.</p>
+        <button id="downloadCertificate" class="btn btn-success">Download Certificate</button>
       </div>
     </section>
-
-    <div class="card">
-      <h3>Growth Chart (Projection)</h3>
-      <div id="chartBox" class="out">Click "Chart Growth" (uses PV → projects forward)</div>
-    </div>
-
-    <!-- New Certificate Download Button -->
-    <div class="card">
-      <h3>SadiCoin Tech Investment Securities Certificate</h3>
-      <button id="btnGenerateCertificate">Download Certificate</button>
-    </div>
 
     <footer>
       Bond Investment + Crypto Token
@@ -359,48 +256,15 @@
   <script>
     // Basic state
     let txCount = 0;
-    const txBody = document.querySelector('#txTable tbody');
-    const amortBody = document.getElementById('amortBody');
-    const maturityOption = document.getElementById('maturityOption');
-    const customMaturity = document.getElementById('customMaturity');
-    maturityOption.addEventListener('change', ()=> {
-      customMaturity.style.display = maturityOption.value === 'custom' ? 'block' : 'none';
-    });
-
-    // PV/FV calculator
-    function calcOnce() {
-      const FV = +document.getElementById('fv').value;
-      const r = +document.getElementById('rate').value / 100;
-      const nYears = +document.getElementById('years').value;
-      const cmp = document.getElementById('cmp').value;
-      let PV;
-      if(cmp === 'cont') {
-        PV = FV / Math.exp(r * nYears);
-      } else {
-        const m = +cmp;
-        PV = FV / Math.pow(1 + r/m, m * nYears);
-      }
-      const ask = (FV - PV) / FV;
-      document.getElementById('result').textContent = `PV=${PV.toFixed(4)} | Ask=${(ask*100).toFixed(2)}%`;
-      return { PV, ask, r, nYears };
-    }
-
-    document.getElementById('btnCalc').addEventListener('click', calcOnce);
 
     // Custom certificate generation function
     document.getElementById('btnGenerateCertificate').addEventListener('click', generateCertificate);
 
     function generateCertificate() {
       const investorName = document.getElementById('investorName').value || 'Investor Name';
-      const depositAmount = document.getElementById('depositAmt').value || '1000';
-      const maturityPeriod = document.getElementById('maturityOption').value || '365';
-      const annualRate = document.getElementById('depRate').value || '8.25';
-      const projectedYield = calculateYield(depositAmount, annualRate, maturityPeriod);
-      const projectedValueAtMaturity = calculateMaturityValue(depositAmount, annualRate, maturityPeriod);
-      const discountRate = 0.10; // Example, can be dynamic
-      const issuer = 'SadiCoin Tech';
-      const issueDate = new Date().toLocaleDateString();
-      const maturityDate = new Date(new Date().setDate(new Date().getDate() + parseInt(maturityPeriod))).toLocaleDateString();
+      const investmentAmount = document.getElementById('investAmount').value || '1000';
+      const investmentCurrency = document.getElementById('investmentCurrency').value || 'ZAR';
+      const amountToConvert = document.getElementById('amountToConvert').value || '0';
 
       const doc = new jsPDF();
 
@@ -408,46 +272,22 @@
       doc.setFont('helvetica');
       doc.setFontSize(14);
 
-      // Add Logo (Replace with actual logo when available)
-      doc.addImage('path-to-logo.png', 'PNG', 15, 10, 30, 30); // Placeholder logo
-
       // Title
-      doc.text('SadiCoin Tech Investment Securities Certificate', 85, 40);
+      doc.text('SadiCoin Tech Investment Certificate', 85, 40);
 
       // Certificate details
       doc.text(`Transaction ID: ${generateTransactionID()}`, 15, 60);
       doc.text(`Investor Name: ${investorName}`, 15, 70);
-      doc.text(`Amount Invested: ZAR ${depositAmount}`, 15, 80);
-      doc.text(`Maturity Period: ${maturityPeriod} days`, 15, 90);
-      doc.text(`Annual Rate: ${annualRate}%`, 15, 100);
-      doc.text(`Projected Yield: ZAR ${projectedYield}`, 15, 110);
-      doc.text(`Projected Value at Maturity: ZAR ${projectedValueAtMaturity}`, 15, 120);
-      doc.text(`Discount Rate (Ask Price): ${discountRate * 100}%`, 15, 130);
-      doc.text(`Issuer: ${issuer}`, 15, 140);
-      doc.text(`Date of Issue: ${issueDate}`, 15, 150);
-      doc.text(`Date of Maturity: ${maturityDate}`, 15, 160);
+      doc.text(`Investment Amount: ${investmentAmount} ${investmentCurrency}`, 15, 80);
+      doc.text(`Amount Converted to SDC: ${amountToConvert} SDC`, 15, 90);
 
       // Save PDF
-      doc.save('SadiCoin_Tech_Investment_Securities_Certificate.pdf');
+      doc.save('SadiCoin_Tech_Investment_Certificate.pdf');
     }
 
     // Custom function to generate a transaction ID
     function generateTransactionID() {
       return 'TX' + Math.floor(Math.random() * 100000);
-    }
-
-    // Custom function for calculating projected yield
-    function calculateYield(amount, rate, days) {
-      const r = rate / 100;
-      const periods = days / 365;
-      return (amount * r * periods).toFixed(2);
-    }
-
-    // Custom function for calculating projected value at maturity
-    function calculateMaturityValue(amount, rate, days) {
-      const r = rate / 100;
-      const periods = days / 365;
-      return (amount * (1 + r * periods)).toFixed(2);
     }
   </script>
 </body>
