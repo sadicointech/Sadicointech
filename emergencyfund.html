@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>SadiCoin CBDC + Bond Certificate of Deposit System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script> <!-- For Excel Export -->
+  <style>
+    /* General CSS */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #121212;
+      color: #ffffff;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #1c1c1c;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h3 {
+      font-size: 24px;
+      color: #f1f1f1;
+    }
+    header img {
+      width: 100px;
+      height: auto;
+    }
+    .app {
+      padding: 20px;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+    .card {
+      background-color: #333333;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+    h1, h3 {
+      color: #f1f1f1;
+    }
+    label {
+      color: #f1f1f1;
+      margin-top: 10px;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #555555;
+      background-color: #222222;
+      color: #f1f1f1;
+    }
+    button {
+      cursor: pointer;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .out {
+      background-color: #444444;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 5px;
+      color: #f1f1f1;
+      font-size: 14px;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      background-color: #1c1c1c;
+      color: #f1f1f1;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h3>SadiCoin CBDC + Certificate of Deposit (CD) System</h3>
+  </header>
+
+  <div class="app">
+    <header>
+      <h1>Admin Dashboard</h1>
+      <p>Issue Certificate of Deposit (CD) to Clients</p>
+    </header>
+
+    <!-- Admin Form for Issuing CD -->
+    <section class="cards">
+      <div class="card">
+        <h3>Issue Certificate of Deposit</h3>
+        <label>Client Mobile Number</label>
+        <input id="client-mobile" type="text" placeholder="Enter Client Mobile Number" />
+        <label>CD Value (SDC)</label>
+        <input id="cd-value" type="number" placeholder="Enter Value of CD" />
+        <label>Interest Rate (%)</label>
+        <input id="interest-rate" type="number" step="0.01" value="8.25" />
+        <label>Years (Duration)</label>
+        <input id="cd-years" type="number" value="1" />
+        <button id="issue-cd">Issue Certificate</button>
+      </div>
+    </section>
+
+    <!-- Client Info Display -->
+    <section class="cards" id="client-info" style="display:none;">
+      <div class="card">
+        <h3>Client Information</h3>
+        <p>Client Mobile: <span id="client-mobile-display"></span></p>
+        <p>Balance (SDC): <span id="client-balance-display">1000</span></p>
+        <p>Issued Certificate of Deposit Value (SDC): <span id="issued-cd-value"></span></p>
+        <button id="download-certificate">Download Certificate</button>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    SadiCoin CBDC & Certificate of Deposit System
+  </footer>
+
+  <script>
+    // Simulate initial client balance (this would be retrieved from the real wallet system)
+    const initialBalance = 1000; // 1000 SDC as the starting balance
+    localStorage.setItem("client-balance", initialBalance);
+
+    // Admin Issuing CD
+    document.getElementById("issue-cd").addEventListener("click", function() {
+      const clientMobile = document.getElementById("client-mobile").value;
+      const cdValue = parseFloat(document.getElementById("cd-value").value);
+      const interestRate = parseFloat(document.getElementById("interest-rate").value) / 100;
+      const years = parseInt(document.getElementById("cd-years").value);
+
+      if (clientMobile && cdValue > 0) {
+        // Calculate future value of the CD with compound interest
+        let futureValue = cdValue * Math.pow(1 + interestRate, years); // compound interest formula
+
+        // Simulate storing data in system storage
+        localStorage.setItem("client-mobile", clientMobile);
+        localStorage.setItem("issued-cd-value", futureValue.toFixed(2));
+
+        // Reflect the CD value and client balance
+        let currentBalance = parseFloat(localStorage.getItem("client-balance"));
+        currentBalance -= cdValue; // Deduct the CD amount from client's balance
+        localStorage.setItem("client-balance", currentBalance.toFixed(2));
+
+        // Display the information on client portal
+        document.getElementById("client-mobile-display").textContent = clientMobile;
+        document.getElementById("client-balance-display").textContent = currentBalance.toFixed(2);
+        document.getElementById("issued-cd-value").textContent = futureValue.toFixed(2);
+
+        // Show client info section
+        document.getElementById("client-info").style.display = "block";
+      } else {
+        alert("Please provide valid client mobile number and CD value.");
+      }
+    });
+
+    // Generate Certificate and save as JSON
+    document.getElementById("download-certificate").addEventListener("click", function() {
+      const certificateData = {
+        clientMobile: localStorage.getItem("client-mobile"),
+        cdValue: document.getElementById("cd-value").value,
+        futureValue: localStorage.getItem("issued-cd-value"),
+        interestRate: document.getElementById("interest-rate").value,
+        years: document.getElementById("cd-years").value,
+      };
+
+      // JSON Download
+      const blob = new Blob([JSON.stringify(certificateData, null, 2)], { type: 'application/json' });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "client_cd_certificate.json";
+      link.click();
+
+      // PDF Download using jsPDF
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      // Add content to PDF
+      doc.text("Certificate of Deposit", 20, 20);
+      doc.text(`Client Mobile: ${localStorage.getItem("client-mobile")}`, 20, 30);
+      doc.text(`CD Value: ZAR ${document.getElementById("cd-value").value}`, 20, 40);
+      doc.text(`Future Value: ZAR ${localStorage.getItem("issued-cd-value")}`, 20, 50);
+      doc.text(`Interest Rate: ${document.getElementById("interest-rate").value}%`, 20, 60);
+      doc.text(`Duration: ${document.getElementById("cd-years").value} years`, 20, 70);
+
+      // Seal and Signature Placeholder
+      doc.text("Seal: __________________", 20, 80);
+      doc.text("Signature: __________________", 20, 90);
+
+      // Save PDF
+      doc.save("Certificate_of_Deposit.pdf");
+    });
+  </script>
+</body>
+</html>
