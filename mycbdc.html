@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Client-side Photo Chat Pay with CBDC</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qr-code-generator/3.1.0/qrcode.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      padding: 30px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2C3E50;
+    }
+
+    .chat-box {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .send-btn {
+      background-color: #28a745;
+      color: white;
+      font-weight: bold;
+      padding: 10px 20px;
+      cursor: pointer;
+      border-radius: 5px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      border: none;
+      margin-top: 10px;
+    }
+
+    .send-btn:hover {
+      background-color: #218838;
+    }
+
+    .send-amount {
+      margin-top: 20px;
+    }
+
+    .wallet-info {
+      background-color: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .purchase-airtime {
+      margin-top: 20px;
+      padding: 20px;
+      background-color: #fff3e0;
+      border-radius: 8px;
+      text-align: center;
+    }
+    
+    /* QR Code Styling */
+    .qr-code {
+      margin-top: 20px;
+    }
+
+  </style>
+</head>
+<body>
+
+  <h1>Client-side Photo Chat Pay</h1>
+
+  <!-- Chat Box -->
+  <div class="chat-box">
+    <div id="chatWindow"></div>
+
+    <div class="form-group">
+      <label for="messageInput">Send Message (Optional):</label>
+      <input type="text" id="messageInput" placeholder="Enter your message here" />
+    </div>
+
+    <div class="form-group send-amount">
+      <label for="sendAmount">Amount to Send (ZAR):</label>
+      <input type="number" id="sendAmount" placeholder="Enter amount to send" />
+    </div>
+
+    <button id="sendBtn" class="send-btn">Send CBDC</button>
+  </div>
+
+  <!-- Wallet Information -->
+  <div class="wallet-info">
+    <h3>Your CBDC Wallet</h3>
+    <div class="balance">
+      <span>Total Balance: <strong id="walletBalance">1000 ZAR</strong></span>
+    </div>
+  </div>
+
+  <!-- Airtime Purchase Section -->
+  <div class="purchase-airtime">
+    <h3>Buy Airtime Using CBDC</h3>
+    <div class="form-group">
+      <label for="mtnNumber">MTN Mobile Number:</label>
+      <input type="text" id="mtnNumber" placeholder="Enter MTN number">
+    </div>
+
+    <div class="form-group">
+      <label for="airtimeAmount">Amount (ZAR):</label>
+      <input type="number" id="airtimeAmount" placeholder="Enter amount to purchase">
+    </div>
+
+    <button id="purchaseAirtimeBtn" class="send-btn">Buy Airtime</button>
+
+    <!-- QR Code for Payment -->
+    <div class="qr-code">
+      <h4>QR Code for Payment</h4>
+      <div id="qrCode"></div>
+    </div>
+  </div>
+
+  <!-- Google Pay, Apple Pay, NFC Integration (simplified) -->
+  <div>
+    <h3>Payment Methods</h3>
+    <button id="googlePayBtn" class="send-btn">Pay with Google Pay</button>
+    <button id="applePayBtn" class="send-btn">Pay with Apple Pay</button>
+    <button id="nfcPayBtn" class="send-btn">Tap to Pay (NFC)</button>
+  </div>
+
+  <script>
+    const sendBtn = document.getElementById('sendBtn');
+    const messageInput = document.getElementById('messageInput');
+    const sendAmount = document.getElementById('sendAmount');
+    const chatWindow = document.getElementById('chatWindow');
+    const walletBalance = document.getElementById('walletBalance');
+    const transactionHistory = document.getElementById('transactionHistory');
+    const walletBanknotes = document.getElementById('walletBanknotes');
+    const qrCodeContainer = document.getElementById('qrCode');
+
+    let balance = 1000;
+
+    // Send CBDC and Chat Message
+    sendBtn.addEventListener('click', () => {
+      const amountToSend = sendAmount.value;
+      const message = messageInput.value;
+
+      if (amountToSend <= 0 || amountToSend > balance) {
+        alert('Please enter a valid amount.');
+        return;
+      }
+
+      // Update Wallet Balance
+      balance -= amountToSend;
+      walletBalance.innerText = `${balance} ZAR`;
+
+      // Log the transaction in history
+      const transactionItem = document.createElement('li');
+      transactionItem.innerHTML = `
+        <div>
+          <span>Sent ${amountToSend} ZAR</span><br>
+          Message: ${message || 'No message'}<br>
+          Date: ${new Date().toLocaleString()}
+        </div>
+      `;
+      transactionHistory.appendChild(transactionItem);
+
+      // Simulate Chat Conversation
+      const clientMessage = document.createElement('div');
+      clientMessage.classList.add('chat-bubble', 'client');
+      clientMessage.innerHTML = `Sent: ${amountToSend} ZAR, Message: ${message || 'No message'}`;
+      chatWindow.appendChild(clientMessage);
+
+      // Clear Inputs
+      sendAmount.value = '';
+      messageInput.value = '';
+    });
+
+    // Airtime Purchase Function
+    document.getElementById('purchaseAirtimeBtn').addEventListener('click', () => {
+      const mtnNumber = document.getElementById('mtnNumber').value;
+      const airtimeAmount = document.getElementById('airtimeAmount').value;
+
+      // Basic validation for airtime purchase
+      if (!mtnNumber || airtimeAmount <= 0 || airtimeAmount > balance) {
+        alert('Please enter a valid MTN number and amount.');
+        return;
+      }
+
+      // Deduct the airtime purchase amount from the CBDC balance
+      balance -= airtimeAmount;
+      walletBalance.innerText = `${balance} ZAR`;
+
+      // Log the transaction
+      const transactionItem = document.createElement('li');
+      transactionItem.innerHTML = `
+        <div>
+          <span>Purchased ${airtimeAmount} ZAR of airtime for ${mtnNumber}</span><br>
+          Date: ${new Date().toLocaleString()}
+        </div>
+      `;
+      transactionHistory.appendChild(transactionItem);
+
+      // Simulate Chat Conversation for Airtime Purchase
+      const clientMessage = document.createElement('div');
+      clientMessage.classList.add('chat-bubble', 'client');
+      clientMessage.innerHTML = `Purchased: ${airtimeAmount} ZAR of airtime for ${mtnNumber}`;
+      chatWindow.appendChild(clientMessage);
+
+      // Clear Inputs
+      document.getElementById('mtnNumber').value = '';
+      document.getElementById('airtimeAmount').value = '';
+    });
+
+    // Generate QR Code for Payment
+    function generateQRCode(amount) {
+      const qrData = `Amount to Pay: ${amount} ZAR`; // Customize this with any payment data
+      QRCode.toCanvas(qrCodeContainer, qrData, function(error) {
+        if (error) console.error(error);
+        else console.log("QR code generated successfully!");
+      });
+    }
+
+    // Trigger QR Code Generation
+    document.getElementById('sendBtn').addEventListener('click', () => {
+      const amountToSend = sendAmount.value;
+      generateQRCode(amountToSend);
+    });
+
+    // Google Pay Integration (simplified)
+    document.getElementById('googlePayBtn').addEventListener('click', () => {
+      if (window.GooglePay) {
+        // Assuming integration of Google Pay API
+        console.log('Google Pay initiated');
+        // Call your Google Pay integration logic here (e.g., creating a payment request)
+        alert("Payment via Google Pay initiated!");
+      } else {
+        alert("Google Pay is not available.");
+      }
+    });
+
+    // Apple Pay Integration (simplified)
+    document.getElementById('applePayBtn').addEventListener('click', () => {
+      if (window.ApplePaySession) {
+        // Assuming integration of Apple Pay API
+        console.log('Apple Pay initiated');
+        // Call your Apple Pay integration logic here (e.g., creating a payment request)
+        alert("Payment via Apple Pay initiated!");
+      } else {
+        alert("Apple Pay is not available.");
+      }
+    });
+
+    // NFC Tap-to-Pay (simplified, requires NFC-enabled device)
+    document.getElementById('nfcPayBtn').addEventListener('click', () => {
+      if ('NFC' in window) {
+        // Assuming your platform supports NFC API (Android, iOS with Core NFC, etc.)
+        console.log('NFC payment initiated');
+        alert("NFC Tap-to-Pay initiated!");
+      } else {
+        alert("NFC is not supported on this device.");
+      }
+    });
+  </script>
+
+</body>
+</html>
