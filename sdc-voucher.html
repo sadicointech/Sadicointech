@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SadiCoin Tech: SDC or SDB Site</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qr-code-generator/3.1.0/qrcode.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      padding: 30px;
+    }
+    h1, h2, h3 {
+      text-align: center;
+      color: #2C3E50;
+    }
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+    th, td {
+      padding: 10px;
+      text-align: center;
+    }
+    .form-group {
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    .form-group label {
+      font-weight: bold;
+    }
+    .form-group input {
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 5px;
+      width: 200px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .result {
+      margin-top: 20px;
+      text-align: center;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>SadiCoin Tech: SDC or SDB Financial Site</h1>
+  
+  <!-- Currency Conversion Form -->
+  <h2>Currency Unit Conversion & SDR Interest</h2>
+  <div class="form-group">
+    <label for="currencyAmount">Enter Amount (USD):</label>
+    <input type="number" id="currencyAmount" placeholder="Enter Amount" />
+  </div>
+
+  <button onclick="calculateCurrency()">Calculate Conversion</button>
+
+  <div class="result">
+    <p id="conversionResult"></p>
+  </div>
+
+  <!-- Currency Conversion Table -->
+  <h3>Currency Conversion Table</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Currency Unit</th>
+        <th>Currency Amount</th>
+        <th>Exchange Rate (USD)</th>
+        <th>USD Equivalent</th>
+        <th>Actual Weight</th>
+      </tr>
+    </thead>
+    <tbody id="currencyTable">
+      <!-- Data will be dynamically inserted here -->
+    </tbody>
+  </table>
+
+  <!-- SDR Interest Rate Table -->
+  <h3>SDR Interest Rates</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Currency Unit</th>
+        <th>Interest Rate %</th>
+        <th>Product (A * B * C)</th>
+      </tr>
+    </thead>
+    <tbody id="sdrInterestTable">
+      <!-- SDR Interest Rates will be dynamically inserted here -->
+    </tbody>
+  </table>
+
+  <!-- SADC SDG Bond Information -->
+  <h2>SADC SDG Bond Information</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Currency Unit</th>
+        <th>Initial Weight (Decided in 2024)</th>
+        <th>Currency Amount</th>
+        <th>Exchange Rate (USD)</th>
+        <th>SDB Equivalent</th>
+        <th>Actual Weight</th>
+        <th>SADC Dollar in Local Currency</th>
+        <th>SDG 1 Grants per Person</th>
+        <th>SADC SDG 1 Totals</th>
+      </tr>
+    </thead>
+    <tbody id="sadcBondTable">
+      <!-- Data will be dynamically inserted here -->
+    </tbody>
+  </table>
+
+  <script>
+    const currencyData = [
+      { currency: 'Chinese Yuen', amount: 1.0993, exchangeRate: 0.144299, usdEquivalent: 0.16, actualWeight: 11.78 },
+      { currency: 'Euro', amount: 0.37379, exchangeRate: 1.09845, usdEquivalent: 0.41, actualWeight: 30.48 },
+      { currency: 'Japanese Yen', amount: 13.452, exchangeRate: 0.00735, usdEquivalent: 0.10, actualWeight: 7.34 },
+      { currency: 'UK Pound', amount: 0.08087, exchangeRate: 1.24635, usdEquivalent: 0.10, actualWeight: 7.48 },
+      { currency: 'USDollar', amount: 0.57813, exchangeRate: 1, usdEquivalent: 0.58, actualWeight: 42.92 },
+    ];
+
+    const sdrInterestData = [
+      { currency: 'Chinese Yuen', amount: 1.0993, exchangeRate: 0.11, interestRate: 2.0002, product: 0.235549803 },
+      { currency: 'Euro', amount: 0.37379, exchangeRate: 1.48, interestRate: 1.412234, product: 0.781060742 },
+      { currency: 'Japanese Yen', amount: 13.452, exchangeRate: 0.01, interestRate: -0.135, product: -0.01 },
+      { currency: 'UK Pound', amount: 0.08087, exchangeRate: 0.93, interestRate: 2.978374, product: 0.222862227 },
+      { currency: 'USDollar', amount: 0.57813, exchangeRate: 0.74, interestRate: 4.32, product: 1.854125071 },
+    ];
+
+    const sadcBondData = [
+      { currency: 'ZAR', amount: 15.08, exchangeRate: 100, sdbEquivalent: 1507.87, actualWeight: 101027352980, sadcDollar: 1, grants: 1507.87 },
+      { currency: 'PULA', amount: 1.33, exchangeRate: 15.75, sdbEquivalent: 1516.13, actualWeight: 3565948924, sadcDollar: 1, grants: 1516.13 },
+      { currency: 'MUR', amount: 46.9178, exchangeRate: 2919.92, sdbEquivalent: 5242.56, actualWeight: 668541407, sadcDollar: 1, grants: 5242.56 },
+    ];
+
+    // Calculate Currency Conversion and SDR Interest Rate
+    function calculateCurrency() {
+      const amount = parseFloat(document.getElementById("currencyAmount").value);
+      const resultElement = document.getElementById("conversionResult");
+      if (isNaN(amount)) {
+        resultElement.innerHTML = "Please enter a valid amount.";
+        return;
+      }
+
+      let conversionResult = "";
+      currencyData.forEach(item => {
+        conversionResult += `
+          <p>${item.currency}: ${item.amount * amount} USD</p>
+        `;
+      });
+      resultElement.innerHTML = conversionResult;
+    }
+
+    // Fill Currency Conversion Table
+    function fillCurrencyTable() {
+      const tableBody = document.getElementById("currencyTable");
+      currencyData.forEach(item => {
+        const row = `
+          <tr>
+            <td>${item.currency}</td>
+            <td>${item.amount}</td>
+            <td>${item.exchangeRate}</td>
+            <td>${item.usdEquivalent}</td>
+            <td>${item.actualWeight}</td>
+          </tr>
+        `;
+        tableBody.innerHTML += row;
+      });
+    }
+
+    // Fill SDR Interest Table
+    function fillSdrInterestTable() {
+      const tableBody = document.getElementById("sdrInterestTable");
+      sdrInterestData.forEach(item => {
+        const row = `
+          <tr>
+            <td>${item.currency}</td>
+            <td>${item.interestRate}%</td>
+            <td>${item.product}</td>
+          </tr>
+        `;
+        tableBody.innerHTML += row;
+      });
+    }
+
+    // Fill SADC Bond Table
+    function fillSadcBondTable() {
+      const tableBody = document.getElementById("sadcBondTable");
+      sadcBondData.forEach(item => {
+        const row = `
+          <tr>
+            <td>${item.currency}</td>
+            <td>${item.amount}</td>
+            <td>${item.exchangeRate}</td>
+            <td>${item.sdbEquivalent}</td>
+            <td>${item.actualWeight}</td>
+            <td>${item.sadcDollar}</td>
+            <td>${item.grants}</td>
+          </tr>
+        `;
+        tableBody.innerHTML += row;
+      });
+    }
+
+    // Initialize the tables when the page loads
+    window.onload = function() {
+      fillCurrencyTable();
+      fillSdrInterestTable();
+      fillSadcBondTable();
+    }
+  </script>
+</body>
+</html>
