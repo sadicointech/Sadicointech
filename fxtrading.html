@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SadiCoin Tech - Live FX Dashboard</title>
+<style>
+    body { font-family: Arial, sans-serif; background-color: #f4f6f8; margin:0; padding:0; }
+    header { background-color: #003366; color:white; padding:20px; text-align:center; }
+    main { padding:20px; max-width:1200px; margin:auto; }
+    h2 { color:#003366; }
+    .section { background-color:#fff; padding:20px; margin-bottom:20px; border-radius:8px; box-shadow:0px 2px 6px rgba(0,0,0,0.1); }
+    .wallets, .fx-converter, .transactions, .diagram { display:flex; justify-content:space-between; flex-wrap:wrap; }
+    .wallet, .converter, .transaction-table, .diagram-box { flex:1; min-width:300px; margin:10px; padding:15px; background-color:#e8f0fe; border-radius:8px; }
+    table { width:100%; border-collapse:collapse; }
+    th, td { padding:8px; text-align:left; border-bottom:1px solid #ddd; }
+    button { background-color:#003366; color:white; border:none; padding:8px 16px; margin-top:8px; border-radius:4px; cursor:pointer; }
+    button:hover { background-color:#0055aa; }
+    img { width:100%; border-radius:8px; box-shadow:0px 2px 8px rgba(0,0,0,0.2); }
+</style>
+</head>
+<body>
+
+<header>
+    <h1>SadiCoin Tech Regional Clearing House Dashboard</h1>
+</header>
+
+<main>
+
+    <section class="section wallets">
+        <h2>Wallet Balances</h2>
+        <div class="wallet"><h3>ZWL Wallet</h3><p id="zwl-balance">0 ZWL</p></div>
+        <div class="wallet"><h3>ZAR Wallet</h3><p id="zar-balance">0 ZAR</p></div>
+        <div class="wallet"><h3>USD Wallet</h3><p id="usd-balance">0 USD</p></div>
+        <button onclick="simulateDeposit()">Simulate Deposit</button>
+    </section>
+
+    <section class="section fx-converter">
+        <h2>FX Converter</h2>
+        <div class="converter">
+            <label for="amount">Amount:</label>
+            <input type="number" id="amount" value="100"><br>
+            <label for="from-currency">From:</label>
+            <select id="from-currency">
+                <option value="ZWL">ZWL</option>
+                <option value="ZAR">ZAR</option>
+                <option value="USD">USD</option>
+            </select><br>
+            <label for="to-currency">To:</label>
+            <select id="to-currency">
+                <option value="ZWL">ZWL</option>
+                <option value="ZAR">ZAR</option>
+                <option value="USD">USD</option>
+            </select><br>
+            <button onclick="convertFX()">Convert</button>
+            <p id="conversion-result">Converted Amount: </p>
+        </div>
+    </section>
+
+    <section class="section transactions">
+        <h2>Transaction History</h2>
+        <div class="transaction-table">
+            <table>
+                <thead>
+                    <tr><th>Date</th><th>Type</th><th>Amount</th><th>Currency</th></tr>
+                </thead>
+                <tbody id="transaction-history"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="section diagram">
+        <h2>Platform Diagram</h2>
+        <div class="diagram-box">
+            <img src="a_clean_corporate_infographic_diagram_with_a_light.png" alt="SadiCoin Tech Clearing House Platform Diagram">
+        </div>
+    </section>
+
+</main>
+
+<footer>
+    <p>&copy; 2026 SadiCoin Tech. All rights reserved.</p>
+</footer>
+
+<script>
+let balances = { ZWL: 5000, ZAR: 1000, USD: 200 };
+let fxRates = { "ZWL_ZAR": 0.035, "ZWL_USD": 0.0035, "ZAR_ZWL": 28.57, "ZAR_USD": 0.1, "USD_ZWL": 285.7, "USD_ZAR": 10 };
+
+const updateBalances = () => {
+    document.getElementById('zwl-balance').innerText = balances.ZWL.toFixed(2) + " ZWL";
+    document.getElementById('zar-balance').innerText = balances.ZAR.toFixed(2) + " ZAR";
+    document.getElementById('usd-balance').innerText = balances.USD.toFixed(2) + " USD";
+};
+
+const addTransaction = (type, amount, currency) => {
+    const tbody = document.getElementById('transaction-history');
+    const tr = document.createElement('tr');
+    const date = new Date().toLocaleString();
+    tr.innerHTML = `<td>${date}</td><td>${type}</td><td>${amount}</td><td>${currency}</td>`;
+    tbody.prepend(tr);
+};
+
+const simulateDeposit = () => {
+    balances.ZWL += 1000;
+    balances.ZAR += 200;
+    balances.USD += 50;
+    addTransaction("Deposit", 1000, "ZWL");
+    addTransaction("Deposit", 200, "ZAR");
+    addTransaction("Deposit", 50, "USD");
+    updateBalances();
+};
+
+const convertFX = () => {
+    const amount = parseFloat(document.getElementById('amount').value);
+    const from = document.getElementById('from-currency').value;
+    const to = document.getElementById('to-currency').value;
+
+    if(from === to) { document.getElementById('conversion-result').innerText = `Converted Amount: ${amount} ${to}`; return; }
+
+    const rateKey = `${from}_${to}`;
+    const rate = fxRates[rateKey];
+    if(!rate) { document.getElementById('conversion-result').innerText = "No FX rate available"; return; }
+
+    const convertedAmount = amount * rate;
+    if(balances[from] >= amount) {
+        balances[from] -= amount;
+        balances[to] += convertedAmount;
+        addTransaction("FX Conversion", amount + " → " + convertedAmount.toFixed(2), from + "→" + to);
+        updateBalances();
+        document.getElementById('conversion-result').innerText = `Converted Amount: ${convertedAmount.toFixed(2)} ${to}`;
+    } else {
+        document.getElementById('conversion-result').innerText = `Insufficient balance in ${from}`;
+    }
+};
+
+// Fetch live FX rates from EODHD API
+async function fetchLiveRates() {
+    const apiKey = "67b2d451e5b";
+    try {
+        // Example API endpoint for exchange rates, adjust as per EODHD documentation
+        const response = await fetch(`https://eodhistoricaldata.com/api/exchange-rate/ZWL?api_token=${apiKey}`);
+        const data = await response.json();
+        // Update fxRates dynamically (assuming API returns rates for USD and ZAR)
+        if(data.rates) {
+            fxRates["ZWL_USD"] = data.rates.USD;
+            fxRates["ZWL_ZAR"] = data.rates.ZAR;
+            fxRates["USD_ZWL"] = 1 / data.rates.USD;
+            fxRates["ZAR_ZWL"] = 1 / data.rates.ZAR;
+        }
+        console.log("Live FX rates updated:", fxRates);
+    } catch(err) {
+        console.error("Failed to fetch live FX rates:", err);
+    }
+}
+
+// Update FX rates every 5 minutes
+fetchLiveRates();
+setInterval(fetchLiveRates, 300000);
+
+updateBalances();
+</script>
+
+</body>
+</html>
