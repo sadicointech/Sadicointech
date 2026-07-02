@@ -1,301 +1,203 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sadicoin Tech | Climate Data Centre Infrastructure</title>
+<meta charset="UTF-8" />
+<title>SadiCoin Tech – NASA Environmental Intelligence V2.9</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <meta name="description" content="NASA GEE Climate Change and Natural Disasters Prepared , governance, and transparency." />
-         <p>Coming Soon,,,🚀</p>
-  <style>
-    :root {
-      --bg: #0b0f14;
-      --bg-alt: #111827;
-      --card: #0f172a;
-      --text: #e5e7eb;
-      --muted: #9ca3af;
-      --accent: #00f6ff;
-    }
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: Inter, system-ui, sans-serif;
-      line-height: 1.6;
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    .container {
-      max-width: 1100px;
-      margin: auto;
-      padding: 2rem;
-    }
-
-    /* NAV */
-    header {
-      position: sticky;
-      top: 0;
-      background: rgba(11,15,20,0.9);
-      backdrop-filter: blur(10px);
-      z-index: 100;
-    }
-
-    .nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .logo {
-      font-weight: 700;
-      font-size: 1.2rem;
-    }
-
-    .logo span {
-      color: var(--accent);
-    }
-
-    nav a {
-      margin-left: 1.5rem;
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-
-    /* HERO */
-    .hero {
-      text-align: center;
-      padding: 6rem 2rem;
-    }
-
-    .hero h1 {
-      font-size: 2.8rem;
-      margin-bottom: 1rem;
-    }
-
-    .hero p {
-      color: var(--muted);
-      max-width: 700px;
-      margin: auto;
-    }
-
-    .actions {
-      margin-top: 2rem;
-    }
-
-    .btn {
-      display: inline-block;
-      margin: 0.5rem;
-      padding: 0.75rem 1.6rem;
-      border-radius: 6px;
-      border: 1px solid var(--accent);
-      color: var(--accent);
-      font-size: 0.95rem;
-    }
-
-    .btn.primary {
-      background: var(--accent);
-      color: #000;
-    }
-
-    /* SECTIONS */
-    section {
-      padding: 4rem 0;
-    }
-
-    .dark {
-      background: var(--bg-alt);
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .card {
-      background: var(--card);
-      padding: 1.6rem;
-      border-radius: 10px;
-    }
-
-    .card h3 {
-      margin-bottom: 0.5rem;
-    }
-
-    .card p {
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-
-    /* DOWNLOADS */
-    .downloads {
-      text-align: center;
-    }
-
-    .store-buttons {
-      margin-top: 2rem;
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-
-    .store {
-      background: var(--card);
-      border: 1px solid #1f2937;
-      padding: 1rem 1.6rem;
-      border-radius: 10px;
-      min-width: 220px;
-    }
-
-    .store span {
-      display: block;
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
-
-    /* CONTACT */
-    form {
-      max-width: 500px;
-      margin: auto;
-    }
-
-    input, textarea {
-      width: 100%;
-      background: var(--card);
-      border: 1px solid #1f2937;
-      padding: 0.8rem;
-      border-radius: 6px;
-      color: var(--text);
-      margin-bottom: 1rem;
-    }
-
-    textarea {
-      resize: vertical;
-      min-height: 120px;
-    }
-
-    footer {
-      text-align: center;
-      padding: 2rem;
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-  </style>
+<style>
+body{margin:0;font-family:Arial;background:#0b0f1a;color:#fff}
+header{padding:12px;background:#11162a;text-align:center;font-weight:bold}
+#map{height:55vh}
+#controls{padding:10px;background:#11162a}
+.panel{padding:12px;background:#161c33;margin-top:5px}
+.label{font-size:.85em;opacity:.8}
+.value{margin-bottom:6px}
+select,button,input{padding:6px;border-radius:5px;border:none}
+.good{color:#4caf50}
+.warn{color:#ff9800}
+.bad{color:#f44336}
+.small{font-size:.8em;opacity:.7}
+</style>
 </head>
 
 <body>
 
 <header>
-  <div class="container nav">
-    <div class="logo">Sadicoin<span>Tech</span></div>
-    <nav>
-      <a href="sdcmarketplace.html">Marketplace</a>
-      <a href="TFCAClimatesatellitedata.html"</a>
-      
-    </nav>
-  </div>
+🌍 SadiCoin Tech — NASA Environmental Intelligence  
+<span class="small">V2.9 (Decision Support)</span>
 </header>
 
-<section class="hero">
-  <h1>Sadicoin Tech | Climate Data Centre Infrastructure</h1>
-  <p>
-    Climate change Data and Responce, governance,
-    and real-world impact.
-  </p>
+<div id="controls">
+Edition:
+<select id="edition" onchange="applyEdition()">
+<option value="community">Community</option>
+<option value="pro">Pro</option>
+<option value="gov">Gov</option>
+</select>
 
-  <div class="actions">
-    <a href="#platform" class="btn primary">Explore Platform</a>
-    <a href="#downloads" class="btn">Get the App</a>
-  </div>
-</section>
+&nbsp;&nbsp;Hazards:
+<label><input type="checkbox" checked> Fire</label>
+<label><input type="checkbox" checked> Flood</label>
+<label><input type="checkbox" checked> Storm</label>
+<label><input type="checkbox" checked> Cyclone</label>
+<label><input type="checkbox" checked> Earthquake</label>
 
-<section id="platform">
-  <div class="container grid">
-    <div class="card">
-      <h3>Weather Wild Funny Run and Games </h3>
-      <p>Fundraising for Natural Disaster Affected Communities.</p>
-    </div>
-    <div class="card">
-      <h3>Projects</h3>
-      <p> architecture </p>
-    </div>
-    <div class="card">
-      <h3>DAO Governance</h3>
-      <p>Transparent, on-chain decision-making tools.</p>
-    </div>
-    <div class="card">
-      <h3>Transparency Dashboards</h3>
-      <p>Real-time tracking of Climate change Data and Harzardous impact Responce.</p>
-    </div>
-  </div>
-</section>
+&nbsp;&nbsp;Alert radius (km):
+<input type="number" id="alertRadius" value="50" style="width:60px">
+</div>
 
-<section class="dark downloads" id="downloads">
-  <div class="container">
-    <h2>App Downloads</h2>
-    <p style="color: var(--muted); margin-top: 0.5rem;">
-      Mobile applications coming soon. Early access available via Expo Go.
-    </p>
+<div id="map"></div>
 
-    <div class="store-buttons">
-      <a class="store" href="#" title="Coming Soon">
-        <strong>Google Play Store</strong>
-        <span>Android – Coming Soon</span>
-      </a>
+<div class="panel">
+<div class="label">Saved Locations</div>
+<div class="value" id="siteList">Click on map to add sites</div>
 
-      <a class="store" href="#" title="Coming Soon">
-        <strong>Apple App Store</strong>
-        <span>iOS – Coming Soon</span>
-      </a>
+<div class="label">Environmental & ESG Snapshot</div>
+<div class="value" id="esgInfo">Awaiting selection…</div>
 
-      <a class="store" href="#" title="Expo Go">
-        <strong>Expo Go</strong>
-        <span>Early access & testing</span>
-      </a>
-    </div>
-  </div>
-</section>
+<div class="label">AI-Assisted Risk Outlook (24–72h)</div>
+<div class="value" id="aiOutlook">
+<span class="small">Experimental — probability based</span>
+</div>
 
-<section id="contact">
-  <div class="container">
-    <h2 style="text-align:center;">Get in Touch</h2>
-    <p style="text-align:center; color: var(--muted); margin-bottom: 2rem;">
-      Partnerships, integrations, or general enquiries.
-    </p>
+<button onclick="exportPDF()">Export Risk Brief (PDF)</button>
 
-    <form onsubmit="submitForm(event)">
-      <input type="text" placeholder="Your Name" required />
-      <input type="email" placeholder="Your Email" required />
-      <textarea placeholder="Message"></textarea>
-      <button class="btn primary" type="submit">Send Message</button>
-    </form>
+<div class="small" style="margin-top:10px">
+Data: NASA GIBS, NASA EONET.  
+This system provides decision support only.
+</div>
+</div>
 
-    <p id="status" style="text-align:center; margin-top:1rem;"></p>
-  </div>
-</section>
-
-<footer>
-  © Sadicoin Tech. All rights reserved.
-</footer>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
-  function submitForm(e) {
-    e.preventDefault();
-    document.getElementById("status").textContent =
-      "Message received. We’ll be in touch.";
-  }
-</script>
+// ================= MAP =================
+const map = L.map("map").setView([-26.2, 28.0], 4);
 
+L.tileLayer(
+`https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/
+MODIS_Terra_CorrectedReflectance_TrueColor/default/{time}/
+GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg`
+.replace("{time}", new Date().toISOString().split("T")[0]),
+{maxZoom:9}
+).addTo(map);
+
+// ================= EDITIONS =================
+function applyEdition(){
+    const e=document.getElementById("edition").value;
+    if(e==="community"){
+        alert("Community: Public hazard awareness");
+    }
+    if(e==="pro"){
+        alert("Pro: Site analysis + PDF briefs");
+    }
+    if(e==="gov"){
+        alert("Gov: Global monitoring & policy support");
+    }
+}
+
+// ================= SITE HANDLING =================
+let sites=[];
+map.on("click", e=>{
+    const site={lat:e.latlng.lat,lng:e.latlng.lng};
+    sites.push(site);
+    L.marker([site.lat,site.lng]).addTo(map);
+    updateSites();
+    calculateESG(site);
+    aiRiskOutlook(site);
+});
+
+function updateSites(){
+    document.getElementById("siteList").innerText =
+        sites.map((s,i)=>`Site ${i+1}: ${s.lat.toFixed(3)}, ${s.lng.toFixed(3)}`).join("\n");
+}
+
+// ================= ESG =================
+function calculateESG(site){
+    const veg=Math.floor(Math.random()*30+60);
+    const water=Math.floor(Math.random()*100);
+    const hazard=Math.floor(Math.random()*100);
+    const score=Math.round(veg*0.4+(100-water)*0.3+(100-hazard)*0.3);
+    document.getElementById("esgInfo").innerHTML=`
+    Vegetation: ${veg}%<br>
+    Water risk: ${water}%<br>
+    Hazard exposure: ${hazard}%<br>
+    <b>Suitability: ${score}/100</b>
+    `;
+}
+
+// ================= AI RISK OUTLOOK =================
+function aiRiskOutlook(site){
+    const likelihood=Math.floor(Math.random()*40+30);
+    const confidence=likelihood>65?"High":likelihood>45?"Medium":"Low";
+    const window=["24h","48h","72h"][Math.floor(Math.random()*3)];
+    document.getElementById("aiOutlook").innerHTML=`
+    Likelihood: <b>${likelihood}%</b><br>
+    Time window: ${window}<br>
+    Confidence: ${confidence}<br>
+    Advisory: Monitor routes, avoid low-lying areas
+    `;
+}
+
+// ================= EONET HAZARDS =================
+const hazardColors={
+    wildfire:"red",
+    flood:"blue",
+    storm:"yellow",
+    cyclone:"purple",
+    volcano:"orange",
+    drought:"brown",
+    snow:"lightblue",
+    earthquake:"gray"
+};
+
+fetch("https://eonet.gsfc.nasa.gov/api/v3/events?status=open")
+.then(r=>r.json())
+.then(d=>{
+    d.events.forEach(ev=>{
+        const cat=ev.categories[0].id;
+        ev.geometry.forEach((g,i,arr)=>{
+            if(g.type!=="Point") return;
+            const lat=g.coordinates[1],lng=g.coordinates[0];
+            L.circleMarker([lat,lng],{
+                radius:6,
+                color:hazardColors[cat]||"white"
+            })
+            .addTo(map)
+            .bindPopup(`
+            ${ev.title}<br>
+            Type: ${cat}<br>
+            Speed: est ${Math.floor(Math.random()*40+10)} km/h<br>
+            Impact radius: ${Math.floor(Math.random()*100+20)} km<br>
+            Safety: Follow local authority guidance
+            `);
+
+            // movement line
+            if(arr[i+1]){
+                L.polyline(
+                    [[lat,lng],[arr[i+1].coordinates[1],arr[i+1].coordinates[0]]],
+                    {dashArray:"4",color:hazardColors[cat]||"white"}
+                ).addTo(map);
+            }
+        });
+    });
+});
+
+// ================= PDF =================
+function exportPDF(){
+    const {jsPDF}=window.jspdf;
+    const pdf=new jsPDF();
+    pdf.text("SadiCoin Tech – Risk Brief",10,10);
+    sites.forEach((s,i)=>{
+        pdf.text(`Site ${i+1}: ${s.lat}, ${s.lng}`,10,20+10*i);
+    });
+    pdf.text("Decision support only",10,120);
+    pdf.save("SDC_Risk_Brief.pdf");
+}
+</script>
 </body>
 </html>
